@@ -1,0 +1,14 @@
+{
+    "name": "root/p5",
+    "autoload": {
+        "psr-4": {
+            "Root\\P5\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Thimoté"
+        }
+    ],
+    "require": {}
+}
