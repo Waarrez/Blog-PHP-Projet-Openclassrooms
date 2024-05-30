@@ -11,6 +11,7 @@
         }
     ],
     "require": {
+        "php": "^8.2",
         "twig/twig": "^3.10",
         "nikic/fast-route": "^1.3"
     }
