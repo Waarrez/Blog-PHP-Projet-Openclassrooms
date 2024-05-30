@@ -7,9 +7,6 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-/**
- * Controller for handling home-related actions.
- */
 class HomeController
 {
     protected Environment $twig;
@@ -25,16 +22,20 @@ class HomeController
     }
 
     /**
+     * Render the home page.
      *
-     *
-     * @return string
+     * @return void
      *
      * @throws SyntaxError
      * @throws RuntimeError
      * @throws LoaderError
      */
-    public function index(): string
+    public function index(): void
     {
-        return $this->twig->render('home/home.twig');
+        try {
+            echo $this->twig->render('home/home.twig');
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
     }
 }

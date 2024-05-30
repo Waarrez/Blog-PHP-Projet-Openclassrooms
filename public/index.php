@@ -8,6 +8,10 @@ use function FastRoute\simpleDispatcher;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 $loader = new FilesystemLoader(__DIR__ . '/../src/templates');
 $twig = new Environment($loader);
 
@@ -37,7 +41,11 @@ switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
-        $controller = new $handler[0]($twig);
-        call_user_func_array([$controller, $handler[1]], $vars);
+        try {
+            $controller = new $handler[0]($twig);
+            call_user_func_array([$controller, $handler[1]], $vars);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
         break;
 }
