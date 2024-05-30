@@ -3,7 +3,7 @@
         'name' => 'root/p5',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '3b4042d29c1ae4f29d7f26ade3c4756e39f2245f',
+        'reference' => '4fec46340ab6575e8121ce8e9c6dbce5ea4774d8',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'root/p5' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '3b4042d29c1ae4f29d7f26ade3c4756e39f2245f',
+            'reference' => '4fec46340ab6575e8121ce8e9c6dbce5ea4774d8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
