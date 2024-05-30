@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
+require_once "../includes/connection.php";
 
 use FastRoute\RouteCollector;
 use Root\P5\Controller\HomeController;
@@ -11,6 +12,7 @@ use Twig\Loader\FilesystemLoader;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 
 $loader = new FilesystemLoader(__DIR__ . '/../src/templates');
 $twig = new Environment($loader);
