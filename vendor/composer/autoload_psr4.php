@@ -11,4 +11,5 @@ return array(
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Root\\P5\\' => array($baseDir . '/src'),
+    'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
 );
