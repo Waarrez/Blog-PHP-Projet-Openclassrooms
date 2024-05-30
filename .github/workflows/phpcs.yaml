@@ -21,5 +21,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-ansi --no-progress --no-suggest
 
+      - name: Update Composer dependencies
+        run: composer update
+
       - name: Run PHP_CodeSniffer
         run: vendor/bin/phpcs
