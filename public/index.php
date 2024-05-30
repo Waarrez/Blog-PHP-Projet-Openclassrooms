@@ -12,7 +12,7 @@ $loader = new FilesystemLoader(__DIR__ . '/../src/templates');
 $twig = new Environment($loader);
 
 // Configuration des routes
-$dispatcher = simpleDispatcher(function(RouteCollector $r) {
+$dispatcher = simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', [HomeController::class, 'index']);
 });
 
