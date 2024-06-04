@@ -1,26 +1,10 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
-require_once "../includes/connection.php";
+require __DIR__ . '/../config/errors.php';
 
-use FastRoute\RouteCollector;
-use Root\P5\Controller\HomeController;
-use function FastRoute\simpleDispatcher;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
-$loader = new FilesystemLoader(__DIR__ . '/../src/templates');
-$twig = new Environment($loader);
-
-// Configuration des routes
-$dispatcher = simpleDispatcher(function (RouteCollector $r) {
-    $r->addRoute('GET', '/', [HomeController::class, 'index']);
-});
+$twig = require __DIR__ . '/../config/twig.php';
+$dispatcher = require __DIR__ . '/../config/routes.php';
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];

@@ -1,0 +1,40 @@
+{% extends "template.twig" %}
+
+{% block title "Inscription" %}
+
+{% block body %}
+
+    <div class="d-flex justify-content-center align-items-center mt-5">
+
+        <form class="shadow w-450 p-3"
+              method="post">
+
+            <h4 class="display-4  fs-1">Créer un compte</h4><br>
+
+            <div class="mb-3">
+                <label class="form-label">Nom d'utilisateur</label>
+                <input type="text"
+                       class="form-control"
+                       name="uname"
+                       value="">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mot de passe</label>
+                <input type="password"
+                       class="form-control"
+                       name="pass">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Confirmer mot de passe</label>
+                <input type="password"
+                       class="form-control"
+                       name="pass">
+            </div>
+
+            <button type="submit" class="btn btn-primary">S'inscrire</button>
+        </form>
+    </div>
+
+{% endblock %}
