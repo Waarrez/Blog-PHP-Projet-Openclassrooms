@@ -7,35 +7,20 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-class HomeController
+class HomeController extends BaseController
 {
-    protected Environment $twig;
-
-    /**
-     * Constructor.
-     *
-     * @param Environment $twig The Twig environment.
-     */
-    public function __construct(Environment $twig)
-    {
-        $this->twig = $twig;
-    }
-
-    /**
-     * Render the home page.
-     *
-     * @return void
-     *
-     * @throws SyntaxError
-     * @throws RuntimeError
-     * @throws LoaderError
-     */
     public function index(): void
     {
-        try {
-            echo $this->twig->render('home/home.twig');
-        } catch (LoaderError | RuntimeError | SyntaxError $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+        $this->render('home/index.twig');
+    }
+
+    public function login(): void
+    {
+        $this->render('login/login.twig');
+    }
+
+    public function register(): void
+    {
+        $this->render('register/register.twig');
     }
 }
