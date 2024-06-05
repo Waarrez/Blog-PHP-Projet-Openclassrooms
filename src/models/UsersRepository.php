@@ -31,6 +31,7 @@ class UsersRepository
         $user->email = $row['email'];
         $user->password = $row['password'];
         $user->isConfirmed = $row['isConfirmed'];
+        $user->roles = $row['roles'];
         $user->createdAt = new DateTime($row['createdAt']);
 
         return $user;
@@ -58,7 +59,7 @@ class UsersRepository
 
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $statement = $pdo->prepare("INSERT INTO user (username, email, password, isConfirmed ,createdAt) VALUES (:username, :email, :password, false ,NOW())");
+        $statement = $pdo->prepare("INSERT INTO user (username, email, password, isConfirmed , roles ,createdAt) VALUES (:username, :email, :password, false, 'USER' ,NOW())");
         $statement->bindValue(':username', $username, PDO::PARAM_STR);
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
         $statement->bindValue(':password', $hashed_password, PDO::PARAM_STR);

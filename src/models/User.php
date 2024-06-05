@@ -11,5 +11,6 @@ class User
     public string $password;
     public string $email;
     public bool $isConfirmed;
+    public string $roles;
     public DateTime $createdAt;
 }
