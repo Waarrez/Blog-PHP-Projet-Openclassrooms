@@ -1,10 +1,14 @@
 <?php
 
+use Root\P5\Classes\DatabaseConnect;
+
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config/errors.php';
 
 $twig = require __DIR__ . '/../config/twig.php';
 $dispatcher = require __DIR__ . '/../config/routes.php';
+
+$dbConnect = new DatabaseConnect(); // Correction de l'instanciation de DatabaseConnect
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
@@ -28,8 +32,9 @@ switch ($routeInfo[0]) {
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
         try {
-            $controller = new $handler[0]($twig);
-            call_user_func_array([$controller, $handler[1]], $vars);
+            $id = $vars['id'] ?? null;
+            $controller = new $handler[0]($twig, $dbConnect);
+            call_user_func_array([$controller, $handler[1]], [$id]);
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }

@@ -1,0 +1,24 @@
+{% extends "template.twig" %}
+
+{% block title "" %}
+
+{% block body %}
+
+    <div class="d-flex flex-column justify-content-center align-items-center mt-5">
+        <h1>{{ post.title }}</h1>
+        <p>{{ post.chapo }}</p>
+        <div class="container mt-5 shadow-lg">
+            <p>{{ post.content }}</p>
+        </div>
+        <div class="d-flex mt-5">
+            <p class="me-5"><b>Auteur : </b>{{ post.author }}</p>
+            <p><b>Dernière modification :</b> {{ post.updatedAt|date('Y-m-d') }}</p>
+        </div>
+    </div>
+    <hr class="container">
+
+    <div class="container d-flex justify-content-center align-items-center">
+        <h2>Commentaires :</h2>
+    </div>
+
+{% endblock %}

@@ -14,13 +14,21 @@ class DatabaseConnect {
     private string $port = "3307";
     private ?PDO $connect = null;
 
+    public function __construct()
+    {
+        $this->connection();
+    }
+
     public function connection(): void
     {
         try {
-            $this->connect = new PDO("mysql:host=$this->server;port=$this->port;dbname=$this->bdd", $this->user, $this->password);
-
-            $this->connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            echo "Connexion à la base de données réussie !";
+            $dsn = "mysql:host=$this->server;port=$this->port;dbname=$this->bdd;charset=utf8mb4";
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4'
+            ];
+            $this->connect = new PDO($dsn, $this->user, $this->password, $options);
         } catch(PDOException $e) {
             echo "Erreur de connexion à la base de données : " . $e->getMessage();
         }
@@ -29,7 +37,6 @@ class DatabaseConnect {
     public function disconnect(): void
     {
         $this->connect = null;
-        echo "Déconnexion de la base de données réussie !";
     }
 
     public function getConnection(): ?PDO

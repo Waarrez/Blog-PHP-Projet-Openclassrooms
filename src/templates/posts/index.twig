@@ -1,7 +1,23 @@
 {% extends "template.twig" %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Posts{% endblock %}
 
 {% block body %}
-    <h1>Page des posts</h1>
+    <div class="d-flex flex-column justify-content-center align-items-center mt-5">
+        <h1>Liste des posts</h1>
+
+        <div class="d-flex flex-row mt-5 gap-4">
+            {% for post in posts %}
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">{{ post.title }}</h5>
+                        <hr>
+                        <p class="card-text">{{ post.chapo }}</p>
+                        <p class="card-text"><b>Dernière modification</b> : <br> {{ post.updatedAt|date('Y-m-d') }}</p>
+                        <a href="/post/{{ post.id }}" class="btn btn-primary">Voir le post</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}
