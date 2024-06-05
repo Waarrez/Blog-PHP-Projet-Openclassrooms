@@ -2,39 +2,49 @@
 
 namespace Root\P5\Controller;
 
+use Exception;
+use Root\P5\Classes\DatabaseConnect;
+use Root\P5\models\PostsRepository;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
-class PostsController
+class PostsController extends BaseController
 {
-    protected Environment $twig;
+    private PostsRepository $postsRepository;
 
-    /**
-     * Constructor.
-     *
-     * @param Environment $twig The Twig environment.
-     */
-    public function __construct(Environment $twig)
+    public function __construct(Environment $twig, DatabaseConnect $db)
     {
-        $this->twig = $twig;
+        parent::__construct($twig, $db);
+        $this->postsRepository = new PostsRepository($db);
     }
 
     /**
-     * Render the home page.
-     *
-     * @return void
-     *
-     * @throws SyntaxError
-     * @throws RuntimeError
-     * @throws LoaderError
+     * @throws Exception
      */
     public function index(): void
     {
         try {
-            echo $this->twig->render('posts/index.twig');
-        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            $posts = $this->postsRepository->getPosts();
+            $this->render('posts/index.twig', ['posts' => $posts]);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function viewPost(int $postId): void
+    {
+        try {
+            $post = $this->postsRepository->getPostById($postId);
+
+            if ($post === null) {
+                echo 'Post not found';
+                return;
+            }
+
+            $this->render('posts/view_post.twig', ['post' => $post]);
+        } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
     }
