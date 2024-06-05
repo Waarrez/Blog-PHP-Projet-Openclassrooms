@@ -5,8 +5,8 @@ namespace Root\P5\Classes;
 use PDO;
 use PDOException;
 
-class DatabaseConnect {
-
+class DatabaseConnect
+{
     private string $server = "localhost";
     private string $user = "root";
     private string $password = "";
@@ -29,7 +29,7 @@ class DatabaseConnect {
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4'
             ];
             $this->connect = new PDO($dsn, $this->user, $this->password, $options);
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             echo "Erreur de connexion à la base de données : " . $e->getMessage();
         }
     }

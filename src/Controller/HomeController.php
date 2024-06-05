@@ -44,8 +44,8 @@ use Twig\Environment;
             $password = $_POST['password'];
             $confirmPassword = $_POST['confirmPassword'];
 
-            if(!empty($username) && !empty($email) && !empty($password) && !empty($confirmPassword)) {
-                if($password !== $confirmPassword) {
+            if (!empty($username) && !empty($email) && !empty($password) && !empty($confirmPassword)) {
+                if ($password !== $confirmPassword) {
                     echo "Les mots de passes ne correspondent pas";
                     exit();
                 }
@@ -58,7 +58,6 @@ use Twig\Environment;
                     echo "Erreur lors de la création de l'utilisateur";
                     exit();
                 }
-
             } else {
                 echo "Touts les champs doivent être complété";
             }
