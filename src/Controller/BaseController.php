@@ -17,14 +17,45 @@ class BaseController
     {
         $this->twig = $twig;
         $this->db = $db;
+        $this->startSession();
+    }
+
+    private function startSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
     protected function render(string $template, array $context = []): void
     {
         try {
+            // Ajouter les informations de session utilisateur au contexte Twig
+            $context['isUserLoggedIn'] = $this->isUserLoggedIn();
+            $context['loggedInUser'] = $this->getLoggedInUser();
+
             echo $this->twig->render($template, $context);
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
             echo 'Error: ' . $e->getMessage();
         }
+    }
+
+    protected function isUserLoggedIn(): bool
+    {
+        return isset($_SESSION['user_id']);
+    }
+
+    protected function getLoggedInUser(): ?array
+    {
+        if ($this->isUserLoggedIn()) {
+            return [
+                'user_id' => $_SESSION['user_id'],
+                'username' => $_SESSION['username'],
+                'email' => $_SESSION['email'],
+                'isConfirmed' => $_SESSION['isConfirmed'],
+                'roles' => $_SESSION['roles'],
+            ];
+        }
+        return null;
     }
 }
