@@ -8,16 +8,8 @@ use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
 
-#[AllowDynamicProperties] class HomeController extends BaseController
+class HomeController extends BaseController
 {
-    private UsersRepository $usersRepository;
-
-    public function __construct(Environment $twig, DatabaseConnect $db)
-    {
-        parent::__construct($twig, $db);
-        $this->userRepository = new UsersRepository($db);
-    }
-
     public function index(): void
     {
         $this->render('home/index.twig');
@@ -28,39 +20,8 @@ use Twig\Environment;
         $this->render('login/login.twig');
     }
 
-    public function showFormRegister(): void
+    public function register(): void
     {
         $this->render('register/register.twig');
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function processRegisterForm(): void
-    {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $username = $_POST['username'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $confirmPassword = $_POST['confirmPassword'];
-
-            if (!empty($username) && !empty($email) && !empty($password) && !empty($confirmPassword)) {
-                if ($password !== $confirmPassword) {
-                    echo "Les mots de passes ne correspondent pas";
-                    exit();
-                }
-
-                $success = $this->userRepository->createUser($username, $email, $password);
-
-                if ($success) {
-                    header('Location: /');
-                } else {
-                    echo "Erreur lors de la création de l'utilisateur";
-                    exit();
-                }
-            } else {
-                echo "Touts les champs doivent être complété";
-            }
-        }
     }
 }

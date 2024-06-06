@@ -67,4 +67,30 @@ class UsersRepository
 
         return $success;
     }
+
+    /**
+     * @throws Exception
+     */
+    public function loginUser(string $email, string $password): ?User
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("SELECT * FROM user WHERE email = :email");
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->execute();
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            return null;
+        }
+
+        if (password_verify($password, $row['password'])) {
+            return $this->fetchUsers($row);
+        } else {
+            return null;
+        }
+    }
 }
