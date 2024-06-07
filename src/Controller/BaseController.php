@@ -30,7 +30,6 @@ class BaseController
     protected function render(string $template, array $context = []): void
     {
         try {
-            // Ajouter les informations de session utilisateur au contexte Twig
             $context['isUserLoggedIn'] = $this->isUserLoggedIn();
             $context['loggedInUser'] = $this->getLoggedInUser();
 
