@@ -1,0 +1,30 @@
+{% extends "template.twig" %}
+
+{% block title %}Ajouter un post{% endblock %}
+
+{% block body %}
+
+    <div class="container text-center mt-5">
+        <h1>Ajouter un post</h1>
+
+        <form class="shadow w-50 mx-auto mt-4" method="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">Titre</label>
+                <input type="text" class="form-control" id="title" name="title" value="">
+            </div>
+
+            <div class="mb-3">
+                <label for="chapo" class="form-label">Chapo</label>
+                <input type="text" class="form-control" id="chapo" name="chapo" value="">
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">Contenu</label>
+                <textarea class="form-control" id="content" name="content" rows="5"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -30,6 +30,58 @@ class PostsController extends BaseController
         }
     }
 
+    public function dashboardPosts(): void
+    {
+        if (!isset($_SESSION["user_id"])) {
+            header('Location: /login');
+            exit();
+        }
+
+        try {
+            $posts = $this->postsRepository->getPostsByUser($_SESSION["user_id"]);
+            $this->render('posts/dashboard_post.twig', ['posts' => $posts]);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function addPost(): void
+    {
+        if (!isset($_SESSION["user_id"])) {
+            header('Location: /login');
+            exit();
+        }
+
+        $this->render('posts/add_post.twig');
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function addPostForm(): void
+    {
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $title = $_POST['title'];
+            $chapo = $_POST['chapo'];
+            $content = $_POST['content'];
+            $author = $_SESSION['username'];
+            $userId = $_SESSION['user_id'];
+
+            if (!empty($title) && !empty($chapo) && !empty($content)) {
+                $success = $this->postsRepository->addPost($title, $chapo, $content, $userId, $author);
+
+                if ($success) {
+                    header('Location: /dashboard_posts');
+                } else {
+                    echo "Erreur lors de la création du post";
+                    exit();
+                }
+            } else {
+                echo "Touts les champs doivent être complété";
+            }
+        }
+    }
+
     /**
      * @throws Exception
      */
@@ -44,6 +96,84 @@ class PostsController extends BaseController
             }
 
             $this->render('posts/view_post.twig', ['post' => $post]);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function editPost(int $postId): void
+    {
+        if (!isset($_SESSION["user_id"])) {
+            header('Location: /login');
+            exit();
+        }
+
+        try {
+            $post = $this->postsRepository->getPostById($postId);
+
+            if ($post === null) {
+                echo 'Post not found';
+                return;
+            }
+
+            if ($post->getUserId() !== $_SESSION['user_id']) {
+                echo 'Vous n\'avez pas l\'autorisation de modifier ce post.';
+                return;
+            }
+
+            $this->render('posts/edit_post.twig', ['post' => $post]);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function editPostForm(): void
+    {
+        if (!isset($_SESSION["user_id"])) {
+            header('Location: /login');
+            exit();
+        }
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $title = $_POST['title'];
+            $chapo = $_POST['chapo'];
+            $content = $_POST['content'];
+            $author = $_SESSION['username'];
+            $userId = $_SESSION['user_id'];
+            $postId = $_POST['postId'];
+
+            if (!empty($title) && !empty($chapo) && !empty($content)) {
+                $success = $this->postsRepository->editPost($postId, $title, $chapo, $content, $author, $userId);
+
+                if ($success) {
+                    header('Location: /dashboard_posts');
+                } else {
+                    echo "Erreur lors de la création du post";
+                    exit();
+                }
+            } else {
+                echo "Touts les champs doivent être complété";
+            }
+        }
+    }
+
+    public function deletePost(int $postId): void
+    {
+        if (!isset($_SESSION["user_id"])) {
+            header('Location: /login');
+            exit();
+        }
+
+        try {
+            $success = $this->postsRepository->deletePost($postId);
+            if ($success) {
+                header('Location: /dashboard_posts');
+            } else {
+                echo "Erreur lors de la suppression du post";
+            }
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
