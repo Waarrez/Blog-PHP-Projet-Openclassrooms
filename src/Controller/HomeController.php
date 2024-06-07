@@ -15,6 +15,29 @@ class HomeController extends BaseController
         $this->render('home/index.twig');
     }
 
+    public function contact(): void
+    {
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $nom = $_POST['nom'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $message = $_POST['message'] ?? '';
+
+            $to = "thimote.cabotte6259@gmail.com";
+            $subject = "Nouveau message de contact";
+            $body = "Nom/prénom: $nom\n";
+            $body .= "Email de contact: $email\n";
+            $body .= "Message:\n$message";
+
+            if (mail($to, $subject, $body)) {
+                echo "Votre message a bien été envoyé.";
+            } else {
+                echo "Une erreur s'est produite lors de l'envoi du message.";
+            }
+        } else {
+            echo "La requête n'est pas de type POST.";
+        }
+    }
+
     public function login(): void
     {
         $this->render('login/login.twig');
