@@ -22,4 +22,5 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('POST', '/login', [LoginController::class, 'processLoginForm']);
     $r->addRoute('GET', '/register', [HomeController::class, 'register']);
     $r->addRoute('POST', '/register', [RegisterController::class, 'processRegisterForm']);
+    $r->addRoute('POST', '/add_comment', [PostsController::class, 'addComment']);
 });

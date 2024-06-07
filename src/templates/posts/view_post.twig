@@ -1,6 +1,6 @@
 {% extends "template.twig" %}
 
-{% block title "" %}
+{% block title  %}{{ post.title }}{% endblock %}
 
 {% block body %}
 
@@ -17,8 +17,36 @@
     </div>
     <hr class="container">
 
-    <div class="container d-flex justify-content-center align-items-center">
-        <h2>Commentaires :</h2>
+    <div class="container d-flex flex-column justify-content-center align-items-center mb-5">
+        <h2>Commentaires</h2>
+
+        {% if comments is not empty %}
+            <div class="comments mt-5">
+                {% for comment in comments %}
+                    <div class="comment mb-4 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">Commentaire de {{ comment.username }}</h5>
+
+                        </div>
+                        <p class="mb-0">{{ comment.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info mt-5" role="alert">
+                Aucun commentaire pour ce post.
+            </div>
+        {% endif %}
+
+
+        <form action="/add_comment" method="POST">
+            <div class="mb-3 text-center mt-5">
+                <label for="comment" class="form-label">Votre commentaire</label>
+                <textarea class="form-control" id="comment" name="content" cols="70" rows="5"></textarea>
+            </div>
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
     </div>
 
 {% endblock %}
