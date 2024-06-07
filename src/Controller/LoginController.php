@@ -47,11 +47,6 @@ use Twig\Environment;
         }
     }
 
-    public function login(): void
-    {
-        $this->render('login/login.twig');
-    }
-
     #[NoReturn] public function logout(): void
     {
         session_start();
