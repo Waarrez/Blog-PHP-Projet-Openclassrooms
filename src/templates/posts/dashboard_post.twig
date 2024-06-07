@@ -1,0 +1,38 @@
+{% extends "template.twig" %}
+
+{% block title %}Mes posts{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5 text-center">
+        <h1>Mes posts</h1>
+        <a href="/add_post" class="btn btn-primary mt-3">Ajouter un post</a>
+
+        <div class="mt-5">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Titre post</th>
+                    <th scope="col">AUTEUR</th>
+                    <th scope="col">Date de modification</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for post in posts %}
+                    <tr>
+                        <th scope="row">{{ post.title }}</th>
+                        <td>{{ post.author }}</td>
+                        <td>{{ post.updatedAt|date('Y-m-d') }}</td>
+                        <td>
+                            <a class="btn btn-secondary" href="/edit_post/{{ post.id }}">Modifier</a>
+                            <a class="btn btn-danger" href="/delete_post/{{ post.id }}">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

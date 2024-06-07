@@ -24,12 +24,12 @@
                         <a class="nav-link" href="/posts">Liste des posts</a>
                     </li>
                     {% if isUserLoggedIn %}
+                        <a class="nav-link" href="/dashboard_posts">Mes posts</a>
                         <a href="#" class="nav-link">Bienvenue : {{ loggedInUser.username }}</a>
                         <a href="/logout" class="nav-link">Déconnexion</a>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">Connexion</a>
-                        </li>
+                        <a class="nav-link" href="/login">Connexion</a>
+                        <a class="nav-link" href="/register">Inscription</a>
                     {% endif %}
                 </ul>
             </div>

@@ -26,12 +26,13 @@ class PostsRepository
         }
 
         $post = new Post();
-        $post->id = $row['id'];
-        $post->title = $row['title'];
-        $post->chapo = $row['chapo'];
-        $post->content = $row['content'];
-        $post->author = $row['author'];
-        $post->updatedAt = new DateTime($row['updatedAt']);
+        $post->setId($row['id']);
+        $post->setTitle($row['title']);
+        $post->setChapo($row['chapo']);
+        $post->setContent($row['content']);
+        $post->setAuthor($row['author']);
+        $post->setUserId($row['user_id']);
+        $post->setUpdatedAt(new DateTime($row['updatedAt']));
 
         return $post;
     }
@@ -61,6 +62,28 @@ class PostsRepository
     /**
      * @throws Exception
      */
+    public function getPostsByUser(int $userId): array
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("SELECT * FROM post WHERE user_id = :userId ORDER BY updatedAt DESC");
+        $statement->execute(['userId' => $userId]);
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $posts = [];
+        foreach ($rows as $row) {
+            $posts[] = $this->fetchPost($row);
+        }
+
+        return $posts;
+    }
+
+    /**
+     * @throws Exception
+     */
     public function getPostById(int $postId): ?Post
     {
         $pdo = $this->databaseConnect->getConnection();
@@ -74,5 +97,62 @@ class PostsRepository
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         return $this->fetchPost($row);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function addPost(string $title, string $chapo, string $content, int $userId, string $author): ?Post
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("INSERT INTO post (title, chapo, content, author, updatedAt, user_id) VALUES (:title, :chapo, :content, :author, NOW(), :userId)");
+        $statement->bindValue(':title', $title, PDO::PARAM_STR);
+        $statement->bindValue(':chapo', $chapo, PDO::PARAM_STR);
+        $statement->bindValue(':content', $content, PDO::PARAM_STR);
+        $statement->bindValue(':author', $author, PDO::PARAM_STR);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->execute();
+        $postId = $pdo->lastInsertId();
+        return $this->getPostById($postId);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function editPost(int $postId, string $title, string $chapo, string $content, string $author, int $userId): bool
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("UPDATE post SET title = :title, chapo = :chapo, content = :content, author = :author, updatedAt = NOW(), user_id = :userId WHERE id = :postId");
+        $statement->bindValue(':title', $title, PDO::PARAM_STR);
+        $statement->bindValue(':chapo', $chapo, PDO::PARAM_STR);
+        $statement->bindValue(':content', $content, PDO::PARAM_STR);
+        $statement->bindValue(':author', $author, PDO::PARAM_STR);
+        $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $statement->bindValue(':postId', $postId, PDO::PARAM_INT);
+        $success = $statement->execute();
+
+        return $success;
+    }
+
+    public function deletePost(int $postId): bool
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("DELETE FROM post WHERE id = :postId");
+        $statement->bindValue(':postId', $postId, PDO::PARAM_INT);
+        $success = $statement->execute();
+
+        return $success;
     }
 }

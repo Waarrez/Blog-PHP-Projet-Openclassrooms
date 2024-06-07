@@ -13,4 +13,5 @@ class User
     public bool $isConfirmed;
     public string $roles;
     public DateTime $createdAt;
+    public int $userId;
 }
