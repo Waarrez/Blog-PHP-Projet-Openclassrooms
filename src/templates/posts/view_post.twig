@@ -39,14 +39,18 @@
         {% endif %}
 
 
-        <form action="/add_comment" method="POST">
-            <div class="mb-3 text-center mt-5">
-                <label for="comment" class="form-label">Votre commentaire</label>
-                <textarea class="form-control" id="comment" name="content" cols="70" rows="5"></textarea>
-            </div>
-            <input type="hidden" name="post_id" value="{{ post.id }}">
-            <button type="submit" class="btn btn-primary">Envoyer</button>
-        </form>
+        {% if userIsAuthenticated %}
+            <form action="/add_comment" method="POST">
+                <div class="mb-3 text-center mt-5">
+                    <label for="comment" class="form-label">Votre commentaire</label>
+                    <textarea class="form-control" id="comment" name="content" cols="70" rows="5"></textarea>
+                </div>
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <button type="submit" class="btn btn-primary">Envoyer</button>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">Connectez-vous pour ajouter un commentaire.</div>
+        {% endif %}
     </div>
 
 {% endblock %}
