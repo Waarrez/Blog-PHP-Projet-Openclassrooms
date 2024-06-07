@@ -45,12 +45,12 @@ class CommentRepository
         }
 
         $statement = $pdo->prepare("
-        SELECT c.*, u.username 
-        FROM comment c
-        JOIN user u ON c.user_id = u.id
-        WHERE c.post_id = :postId
-        AND c.isConfirmed = 1
-    ");
+            SELECT c.*, u.username 
+            FROM comment c
+            JOIN user u ON c.user_id = u.id
+            WHERE c.post_id = :postId
+            AND c.isConfirmed = 1
+        ");
         $statement->execute(['postId' => $postId]);
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -78,6 +78,54 @@ class CommentRepository
             'content' => $content,
             'postId' => $postId,
             'userId' => $userId
+        ]);
+
+        return $statement->rowCount() > 0;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getUnconfirmedComments(): array
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("
+           SELECT c.*, u.username, p.title as postTitle
+            FROM comment c
+            JOIN user u ON c.user_id = u.id
+            JOIN post p ON c.post_id = p.id
+            WHERE c.isConfirmed = 0
+        ");
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $comments = [];
+        foreach ($rows as $row) {
+            $comments[] = $row;
+        }
+
+        return $comments;
+    }
+
+    public function confirmComment(int $commentId): bool
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("
+            UPDATE comment
+            SET isConfirmed = true
+            WHERE id = :commentId
+        ");
+
+        $statement->execute([
+            'commentId' => $commentId,
         ]);
 
         return $statement->rowCount() > 0;

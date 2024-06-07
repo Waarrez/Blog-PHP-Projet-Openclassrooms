@@ -12,6 +12,7 @@ class Comment
     private int $userId;
     private bool $isConfirmed;
     private string $username;
+    private string $postTitle;
 
     // Getters et Setters
     public function getId(): int
@@ -43,6 +44,10 @@ class Comment
     {
         return $this->isConfirmed;
     }
+    public function getPostTitle(): string
+    {
+        return $this->postTitle;
+    }
 
     public function setId(int $id): void
     {
@@ -72,5 +77,10 @@ class Comment
     public function setIsConfirmed(bool $isConfirmed): void
     {
         $this->isConfirmed = $isConfirmed;
+    }
+
+    public function setPostTitle(string $postTitle): void
+    {
+        $this->postTitle = $postTitle;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use FastRoute\RouteCollector;
+use Root\P5\Controller\AdminController;
 use Root\P5\Controller\HomeController;
 use Root\P5\Controller\LoginController;
 use Root\P5\Controller\PostsController;
@@ -24,4 +25,7 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/register', [HomeController::class, 'register']);
     $r->addRoute('POST', '/register', [RegisterController::class, 'processRegisterForm']);
     $r->addRoute('POST', '/add_comment', [PostsController::class, 'addComment']);
+    $r->addRoute('GET', '/dashboard_admin', [AdminController::class, 'index']);
+    $r->addRoute('POST', '/approveC/{id:\d+}', [AdminController::class, 'approveComment']);
+    $r->addRoute('POST', '/approveU/{id:\d+}', [AdminController::class, 'approveUser']);
 });

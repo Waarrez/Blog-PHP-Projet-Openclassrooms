@@ -26,13 +26,13 @@ class UsersRepository
         }
 
         $user = new User();
-        $user->id = $row['id'];
-        $user->username = $row['username'];
-        $user->email = $row['email'];
-        $user->password = $row['password'];
-        $user->isConfirmed = $row['isConfirmed'];
-        $user->roles = $row['roles'];
-        $user->createdAt = new DateTime($row['createdAt']);
+        $user->setId($row['id']);
+        $user->setUsername($row['username']);
+        $user->setEmail($row['email']);
+        $user->setPassword($row['password']);
+        $user->setIsConfirmed($row['isConfirmed']);
+        $user->setRoles($row['roles']);
+        $user->setCreatedAt(new DateTime($row['createdAt']));
 
         return $user;
     }
@@ -92,5 +92,47 @@ class UsersRepository
         }
 
         return $this->fetchUsers($row);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getUserNotApprouved(): array
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("SELECT * FROM user WHERE isConfirmed = false");
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $users = [];
+        foreach ($rows as $row) {
+            $users[] = $this->fetchUsers($row);
+        }
+
+        return $users;
+    }
+
+    public function confirmUser(int $userId): bool
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("
+            UPDATE user
+            SET isConfirmed = true
+            WHERE id = :userId
+        ");
+
+        $statement->execute([
+            'userId' => $userId,
+        ]);
+
+        return $statement->rowCount() > 0;
     }
 }

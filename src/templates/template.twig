@@ -6,6 +6,21 @@
         <title>Blog PHP | {% block title %}{% endblock %}</title>
         <link rel="stylesheet" href="https://bootswatch.com/5/zephyr/bootstrap.min.css">
     </head>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1;
+        }
+        .sticky-footer {
+            margin-top: auto;
+        }
+    </style>
     <body>
     <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
         <div class="container-fluid">
@@ -49,4 +64,13 @@
     {% endblock %}
 
     </body>
+    <footer class="bg-primary text-light py-4 sticky-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mt-3">
+                    <a href="/dashboard_admin" class="btn btn-light">Administration du Blog</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </html>
