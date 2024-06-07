@@ -9,6 +9,7 @@ use function FastRoute\simpleDispatcher;
 
 return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/', [HomeController::class, 'index']);
+    $r->addRoute('POST', '/', [HomeController::class, 'contact']);
     $r->addRoute('GET', '/posts', [PostsController::class, 'index']);
     $r->addRoute('GET', '/dashboard_posts', [PostsController::class, 'dashboardPosts']);
     $r->addRoute('GET', '/add_post', [PostsController::class, 'addPost']);

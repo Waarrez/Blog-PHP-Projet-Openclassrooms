@@ -3,6 +3,46 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    <h1>Bienvenue sur mon blog !</h1>
-    <p>C'est ma page d'accueil.</p>
+    <div class="container mt-5">
+        <h1 class="text-center">Thimoté Cabotte</h1>
+
+        <div class="text-center">
+            <img src="/img/photo.jpg" alt="Photo de Thimoté Cabotte" class="img-fluid rounded-circle" style="width: 150px;">
+        </div>
+
+        <p class="text-center mt-3">Le développeur qu'il vous faut !</p>
+
+        <div class="mt-5">
+            <h2>Contactez-moi</h2>
+            <form method="post">
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Nom/prénom</label>
+                    <input type="text" class="form-control" id="nom" name="nom" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">E-mail de contact</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Envoyer</button>
+            </form>
+        </div>
+
+        <div class="mt-5">
+            <a href="/ressources/cv.pdf" class="btn btn-success" target="_blank">Télécharger mon CV</a>
+        </div>
+
+        <div class="mt-5">
+            <h2>Suivez-moi sur</h2>
+            <ul class="list-inline">
+                <li class="list-inline-item"><a href="https://github.com/Waarrez" target="_blank">GitHub</a></li>
+                <li class="list-inline-item"><a href="https://www.linkedin.com/in/thimot%C3%A9-cabotte-b96623184/" target="_blank">LinkedIn</a></li>
+                <li class="list-inline-item"><a href="https://x.com/TCabotte" target="_blank">Twitter</a></li>
+            </ul>
+        </div>
+    </div>
+
 {% endblock %}
