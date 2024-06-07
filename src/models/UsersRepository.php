@@ -87,10 +87,10 @@ class UsersRepository
             return null;
         }
 
-        if (password_verify($password, $row['password'])) {
-            return $this->fetchUsers($row);
-        } else {
+        if (!password_verify($password, $row['password'])) {
             return null;
         }
+
+        return $this->fetchUsers($row);
     }
 }

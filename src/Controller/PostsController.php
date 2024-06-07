@@ -4,17 +4,20 @@ namespace Root\P5\Controller;
 
 use Exception;
 use Root\P5\Classes\DatabaseConnect;
+use Root\P5\models\CommentRepository;
 use Root\P5\models\PostsRepository;
 use Twig\Environment;
 
 class PostsController extends BaseController
 {
     private PostsRepository $postsRepository;
+    private CommentRepository $commentsRepository;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
         $this->postsRepository = new PostsRepository($db);
+        $this->commentsRepository = new CommentRepository($db);
     }
 
     /**
@@ -34,6 +37,12 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
+        }
+
+        $userConfirmed = $_SESSION["isConfirmed"];
+        if (!$userConfirmed) {
+            header('Location: /');
             exit();
         }
 
@@ -95,9 +104,45 @@ class PostsController extends BaseController
                 return;
             }
 
-            $this->render('posts/view_post.twig', ['post' => $post]);
+            $comments = $this->commentsRepository->getCommentsByPost($postId);
+
+            $this->render('posts/view_post.twig', [
+                'post' => $post,
+                'comments' => $comments
+            ]);
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
+        }
+    }
+
+    public function addComment(): void
+    {
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            if (!isset($_SESSION["user_id"])) {
+                header('Location: /login');
+                exit();
+            }
+
+            $content = $_POST['content'];
+            $userId = $_SESSION['user_id'];
+            $postId = $_POST['post_id'];
+
+            if (!empty($content)) {
+                try {
+                    $success = $this->commentsRepository->addComment($postId, $content, $userId);
+
+                    if ($success) {
+                        header("Location: /post/{$postId}");
+                    } else {
+                        echo "Erreur lors de l'ajout du commentaire";
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo 'Error: ' . $e->getMessage();
+                }
+            } else {
+                echo "Le champ de commentaire ne peut pas être vide";
+            }
         }
     }
 
