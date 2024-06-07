@@ -91,24 +91,18 @@ class PostsController extends BaseController
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function viewPost(int $postId): void
     {
         try {
             $post = $this->postsRepository->getPostById($postId);
-
-            if ($post === null) {
-                echo 'Post not found';
-                return;
-            }
-
             $comments = $this->commentsRepository->getCommentsByPost($postId);
+
+            $userIsAuthenticated = isset($_SESSION['user_id']);
 
             $this->render('posts/view_post.twig', [
                 'post' => $post,
-                'comments' => $comments
+                'comments' => $comments,
+                'userIsAuthenticated' => $userIsAuthenticated
             ]);
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
