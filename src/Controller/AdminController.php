@@ -18,8 +18,6 @@ class AdminController extends BaseController
         parent::__construct($twig, $db);
         $this->usersRepository = new UsersRepository($db);
         $this->commentRepository = new CommentRepository($db);
-
-        $this->checkAdminAccess();
     }
 
     private function checkAdminAccess(): void
@@ -27,11 +25,6 @@ class AdminController extends BaseController
         if (!$this->isAdmin()) {
             header('Location: /');
         }
-    }
-
-    private function isAdmin(): bool
-    {
-        return isset($_SESSION['roles']) && $_SESSION['roles'] === 'ADMIN';
     }
 
     public function index(): void

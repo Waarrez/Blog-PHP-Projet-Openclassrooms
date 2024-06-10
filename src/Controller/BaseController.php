@@ -32,7 +32,8 @@ class BaseController
 
     protected function isUserLoggedIn(): bool
     {
-        return isset($_SESSION['user_id']);
+        $session = $this->getSession();
+        return isset($session['user_id']);
     }
 
     /**
@@ -40,19 +41,31 @@ class BaseController
      */
     protected function getLoggedInUser(): ?array
     {
+        $session = $this->getSession();
         if ($this->isUserLoggedIn()) {
             $loggedInUser = [
-                'user_id' => $_SESSION['user_id'],
-                'username' => $_SESSION['username'],
-                'email' => $_SESSION['email'],
-                'isConfirmed' => $_SESSION['isConfirmed']
+                'user_id' => $session['user_id'],
+                'username' => $session['username'],
+                'email' => $session['email'],
+                'isConfirmed' => $session['isConfirmed']
             ];
-            if (isset($_SESSION['roles'])) {
-                $loggedInUser['roles'] = $_SESSION['roles'];
+            if (isset($session['roles'])) {
+                $loggedInUser['roles'] = $session['roles'];
             }
             return $loggedInUser;
         }
         return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getSession(): array
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        return $_SESSION ?? [];
     }
 
     /**
@@ -70,5 +83,10 @@ class BaseController
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
             return 'Error: ' . $e->getMessage();
         }
+    }
+
+    protected function isAdmin(): bool
+    {
+        return isset($_SESSION['roles']) && $_SESSION['roles'] === 'ADMIN';
     }
 }

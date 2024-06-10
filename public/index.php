@@ -1,6 +1,7 @@
 <?php
 
 use Root\P5\Classes\DatabaseConnect;
+use Twig\Environment;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config/errors.php';
@@ -12,8 +13,10 @@ $dbConnect = new DatabaseConnect();
 
 $httpMethod = $_SERVER['REQUEST_METHOD'] ?? '';
 $uri = $_SERVER['REQUEST_URI'] ?? '';
+$pos = strpos($uri, '?');
 
-if (false !== $pos = strpos($uri, '?')) {
+
+if ($pos !== false) {
     $uri = substr($uri, 0, $pos);
 }
 $uri = rawurldecode($uri);
@@ -21,41 +24,62 @@ $uri = rawurldecode($uri);
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
-        http_response_code(404);
-        header('HTTP/1.0 404 Not Found');
+        handleNotFound();
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-        http_response_code(405);
-        header("HTTP/1.1 405 Method Not Allowed");
+        handleMethodNotAllowed();
         break;
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
         try {
-            if (!is_array($handler) || count($handler) !== 2) {
-                throw new Exception("Le handler n'est pas un tableau valide.");
-            }
-
-            $controllerName = $handler[0];
-            $methodName = $handler[1];
-
-            if (!class_exists($controllerName)) {
-                throw new Exception("Le contrôleur $controllerName n'existe pas.");
-            }
-
-            $controller = new $controllerName($twig, $dbConnect);
-
-            if (!method_exists($controller, $methodName)) {
-                throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
-            }
-
-            if (method_exists($controller, $methodName)) {
-                $controller->{$methodName}($vars);
-            } else {
-                throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
-            }
+            handleRouteFound($handler, $twig, $dbConnect, $vars);
         } catch (Exception $e) {
-            echo 'Error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
+            handleError($e);
         }
         break;
+}
+
+function handleNotFound(): void
+{
+    http_response_code(404);
+    header('HTTP/1.0 404 Not Found');
+}
+
+function handleMethodNotAllowed(): void
+{
+    http_response_code(405);
+    header("HTTP/1.1 405 Method Not Allowed");
+}
+
+/**
+ * @param array{string, string} $handler
+ * @param array<string, mixed> $vars
+ * @throws Exception
+ */
+function handleRouteFound(array $handler, Environment $twig, DatabaseConnect $dbConnect, array $vars): void
+{
+    if (count($handler) != 2) {
+        throw new Exception("Le handler n'est pas un tableau valide.");
+    }
+
+    $controllerName = $handler[0];
+    $methodName = $handler[1];
+
+    if (!class_exists($controllerName)) {
+        throw new Exception("Le contrôleur $controllerName n'existe pas.");
+    }
+
+    $controller = new $controllerName($twig, $dbConnect);
+
+    if (!method_exists($controller, $methodName)) {
+        throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
+    }
+
+    $controller->{$methodName}($vars);
+}
+
+function handleError(Exception $e): void
+{
+    echo 'Error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
 }
