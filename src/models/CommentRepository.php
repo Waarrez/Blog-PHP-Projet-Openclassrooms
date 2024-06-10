@@ -16,9 +16,10 @@ class CommentRepository
     }
 
     /**
+     * @param array<string, mixed> $row
      * @throws Exception
      */
-    private function fetchComments($row): ?Comment
+    private function fetchComments(array $row): ?Comment
     {
         if (!$row) {
             return null;
@@ -35,6 +36,8 @@ class CommentRepository
     }
 
     /**
+     * @param int $postId
+     * @return array<Comment|null>
      * @throws Exception
      */
     public function getCommentsByPost(int $postId): array
@@ -84,6 +87,7 @@ class CommentRepository
     }
 
     /**
+     * @return array<array<string, mixed>>
      * @throws Exception
      */
     public function getUnconfirmedComments(): array

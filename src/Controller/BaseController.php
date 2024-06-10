@@ -27,6 +27,9 @@ class BaseController
         }
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     protected function render(string $template, array $context = []): void
     {
         try {
@@ -44,6 +47,9 @@ class BaseController
         return isset($_SESSION['user_id']);
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     protected function getLoggedInUser(): ?array
     {
         if ($this->isUserLoggedIn()) {

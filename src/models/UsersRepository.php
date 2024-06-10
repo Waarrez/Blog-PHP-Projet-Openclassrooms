@@ -4,8 +4,8 @@ namespace Root\P5\models;
 
 use DateTime;
 use Exception;
-use Root\P5\Classes\DatabaseConnect;
 use PDO;
+use Root\P5\Classes\DatabaseConnect;
 
 class UsersRepository
 {
@@ -17,9 +17,11 @@ class UsersRepository
     }
 
     /**
+     * @param mixed $row
+     * @return User|null
      * @throws Exception
      */
-    private function fetchUsers($row): ?User
+    private function fetchUsers(mixed $row): ?User
     {
         if (!$row) {
             return null;
@@ -38,6 +40,36 @@ class UsersRepository
     }
 
     /**
+     * @return array<User>
+     * @throws Exception
+     */
+    public function getUserNotApproved(): array
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("SELECT * FROM user WHERE isConfirmed = false");
+        $statement->execute();
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $users = [];
+        foreach ($rows as $row) {
+            $user = $this->fetchUsers($row);
+            if ($user !== null) {
+                $users[] = $user;
+            }
+        }
+
+        return $users;
+    }
+
+    /**
+     * @param string $username
+     * @param string $email
+     * @param string $password
+     * @return bool
      * @throws Exception
      */
     public function createUser(string $username, string $email, string $password): bool
@@ -69,6 +101,9 @@ class UsersRepository
     }
 
     /**
+     * @param string $email
+     * @param string $password
+     * @return User|null
      * @throws Exception
      */
     public function loginUser(string $email, string $password): ?User
@@ -83,11 +118,7 @@ class UsersRepository
         $statement->execute();
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if (!$row) {
-            return null;
-        }
-
-        if (!password_verify($password, $row['password'])) {
+        if (!$row || !password_verify($password, $row['password'])) {
             return null;
         }
 
@@ -95,27 +126,10 @@ class UsersRepository
     }
 
     /**
+     * @param int $userId
+     * @return bool
      * @throws Exception
      */
-    public function getUserNotApprouved(): array
-    {
-        $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
-            throw new \Exception('Erreur de connexion à la base de données');
-        }
-
-        $statement = $pdo->prepare("SELECT * FROM user WHERE isConfirmed = false");
-        $statement->execute();
-        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        $users = [];
-        foreach ($rows as $row) {
-            $users[] = $this->fetchUsers($row);
-        }
-
-        return $users;
-    }
-
     public function confirmUser(int $userId): bool
     {
         $pdo = $this->databaseConnect->getConnection();

@@ -17,9 +17,10 @@ class PostsRepository
     }
 
     /**
+     * @param array<string, mixed> $row
      * @throws Exception
      */
-    private function fetchPost($row): ?Post
+    private function fetchPost(array $row): ?Post
     {
         if (!$row) {
             return null;
@@ -38,6 +39,7 @@ class PostsRepository
     }
 
     /**
+     * @return array<Post|null>
      * @throws Exception
      */
     public function getPosts(): array
@@ -60,6 +62,7 @@ class PostsRepository
     }
 
     /**
+     * @return array<Post|null>
      * @throws Exception
      */
     public function getPostsByUser(int $userId): array
@@ -82,10 +85,18 @@ class PostsRepository
     }
 
     /**
+     * @param mixed $postId
+     * @return Post|null
      * @throws Exception
      */
-    public function getPostById(int $postId): ?Post
+    public function getPostById($postId): ?Post
     {
+        if (!is_numeric($postId)) {
+            throw new \InvalidArgumentException('L\'identifiant de publication doit être un entier.');
+        }
+
+        $postId = (int)$postId;
+
         $pdo = $this->databaseConnect->getConnection();
         if ($pdo === null) {
             throw new \Exception('Erreur de connexion à la base de données');
@@ -100,6 +111,12 @@ class PostsRepository
     }
 
     /**
+     * @param string $title
+     * @param string $chapo
+     * @param string $content
+     * @param int $userId
+     * @param string $author
+     * @return Post|null
      * @throws Exception
      */
     public function addPost(string $title, string $chapo, string $content, int $userId, string $author): ?Post
@@ -137,11 +154,12 @@ class PostsRepository
         $statement->bindValue(':author', $author, PDO::PARAM_STR);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->bindValue(':postId', $postId, PDO::PARAM_INT);
-        $success = $statement->execute();
-
-        return $success;
+        return $statement->execute();
     }
 
+    /**
+     * @throws Exception
+     */
     public function deletePost(int $postId): bool
     {
         $pdo = $this->databaseConnect->getConnection();
@@ -151,8 +169,6 @@ class PostsRepository
 
         $statement = $pdo->prepare("DELETE FROM post WHERE id = :postId");
         $statement->bindValue(':postId', $postId, PDO::PARAM_INT);
-        $success = $statement->execute();
-
-        return $success;
+        return $statement->execute();
     }
 }
