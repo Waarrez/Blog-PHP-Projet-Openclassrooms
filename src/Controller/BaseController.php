@@ -87,6 +87,7 @@ class BaseController
 
     protected function isAdmin(): bool
     {
-        return isset($_SESSION['roles']) && $_SESSION['roles'] === 'ADMIN';
+        $session = $this->getSession();
+        return isset($session['roles']) && $session['roles'] === 'ADMIN';
     }
 }

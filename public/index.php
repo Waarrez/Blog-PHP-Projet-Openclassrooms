@@ -2,6 +2,9 @@
 
 use Root\P5\Classes\DatabaseConnect;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../config/errors.php';
@@ -73,13 +76,28 @@ function handleRouteFound(array $handler, Environment $twig, DatabaseConnect $db
     $controller = new $controllerName($twig, $dbConnect);
 
     if (!method_exists($controller, $methodName)) {
-        throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
+        throw new Exception("La méthode " . htmlspecialchars($methodName, ENT_QUOTES, 'UTF-8') . " n'existe pas sur le contrôleur " . htmlspecialchars($controllerName, ENT_QUOTES, 'UTF-8') . ".");
     }
 
     $controller->{$methodName}($vars);
 }
 
-function handleError(Exception $e): void
+/**
+ * @throws RuntimeError
+ * @throws SyntaxError
+ * @throws LoaderError
+ */
+function handleError(Exception $e, Environment $twig): void
 {
-    echo 'Error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
+    renderError($e->getMessage(), $twig);
+}
+
+/**
+ * @throws RuntimeError
+ * @throws SyntaxError
+ * @throws LoaderError
+ */
+function renderError(string $errorMessage, Environment $twig): void
+{
+    echo $twig->render('error.twig', ['errorMessage' => $errorMessage]);
 }

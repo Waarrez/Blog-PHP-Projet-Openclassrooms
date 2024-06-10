@@ -20,13 +20,6 @@ class AdminController extends BaseController
         $this->commentRepository = new CommentRepository($db);
     }
 
-    private function checkAdminAccess(): void
-    {
-        if (!$this->isAdmin()) {
-            header('Location: /');
-        }
-    }
-
     public function index(): void
     {
         try {
