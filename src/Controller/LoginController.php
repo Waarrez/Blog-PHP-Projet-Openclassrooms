@@ -9,14 +9,15 @@ use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
 
-#[AllowDynamicProperties] class LoginController extends BaseController
+#[AllowDynamicProperties]
+class LoginController extends BaseController
 {
     private UsersRepository $usersRepository;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
-        $this->userRepository = new UsersRepository($db);
+        $this->usersRepository = new UsersRepository($db);
     }
 
     /**
@@ -28,7 +29,7 @@ use Twig\Environment;
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            $user = $this->userRepository->loginUser($email, $password);
+            $user = $this->usersRepository->loginUser($email, $password);
 
             if ($user !== null) {
                 $_SESSION['user_id'] = $user->id;
@@ -47,7 +48,7 @@ use Twig\Environment;
         }
     }
 
-    #[NoReturn] public function logout(): void
+    public function logout(): void
     {
         session_start();
         session_unset();

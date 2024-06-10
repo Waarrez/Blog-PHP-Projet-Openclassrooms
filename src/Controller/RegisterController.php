@@ -8,14 +8,15 @@ use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
 
-#[AllowDynamicProperties] class RegisterController extends BaseController
+#[AllowDynamicProperties]
+class RegisterController extends BaseController
 {
     private UsersRepository $usersRepository;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
-        $this->userRepository = new UsersRepository($db);
+        $this->usersRepository = new UsersRepository($db);
     }
 
     /**
@@ -31,11 +32,11 @@ use Twig\Environment;
 
             if (!empty($username) && !empty($email) && !empty($password) && !empty($confirmPassword)) {
                 if ($password !== $confirmPassword) {
-                    echo "Les mots de passes ne correspondent pas";
+                    echo "Les mots de passe ne correspondent pas";
                     exit();
                 }
 
-                $success = $this->userRepository->createUser($username, $email, $password);
+                $success = $this->usersRepository->createUser($username, $email, $password); // Correction de la faute de frappe
 
                 if ($success) {
                     header('Location: /');
@@ -44,7 +45,7 @@ use Twig\Environment;
                     exit();
                 }
             } else {
-                echo "Touts les champs doivent être complété";
+                echo "Tous les champs doivent être complétés";
             }
         }
     }

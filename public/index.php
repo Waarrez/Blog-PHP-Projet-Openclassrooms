@@ -8,7 +8,7 @@ require __DIR__ . '/../config/errors.php';
 $twig = require __DIR__ . '/../config/twig.php';
 $dispatcher = require __DIR__ . '/../config/routes.php';
 
-$dbConnect = new DatabaseConnect(); // Correction de l'instanciation de DatabaseConnect
+$dbConnect = new DatabaseConnect();
 
 $httpMethod = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
@@ -32,9 +32,28 @@ switch ($routeInfo[0]) {
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
         try {
-            $id = $vars['id'] ?? null;
-            $controller = new $handler[0]($twig, $dbConnect);
-            call_user_func_array([$controller, $handler[1]], [$id]);
+            if (!is_array($handler) || count($handler) !== 2) {
+                throw new Exception("Le handler n'est pas un tableau valide.");
+            }
+
+            $controllerName = $handler[0];
+            $methodName = $handler[1];
+
+            if (!class_exists($controllerName)) {
+                throw new Exception("Le contrôleur $controllerName n'existe pas.");
+            }
+
+            $controller = new $controllerName($twig, $dbConnect);
+
+            if (!method_exists($controller, $methodName)) {
+                throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
+            }
+
+            if (method_exists($controller, $methodName)) {
+                $controller->{$methodName}($vars);
+            } else {
+                throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
+            }
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }

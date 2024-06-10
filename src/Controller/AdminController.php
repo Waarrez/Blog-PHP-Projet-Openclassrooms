@@ -37,7 +37,7 @@ class AdminController extends BaseController
     public function index(): void
     {
         try {
-            $users = $this->usersRepository->getUserNotApprouved();
+            $users = $this->usersRepository->getUserNotApproved(); // Correction de la faute de frappe
             $comments = $this->commentRepository->getUnconfirmedComments();
             $this->render('admin/index.twig', ['users' => $users, 'comments' => $comments]);
         } catch (Exception $e) {
