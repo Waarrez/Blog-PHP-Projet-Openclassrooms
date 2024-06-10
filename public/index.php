@@ -14,8 +14,8 @@ $dispatcher = require __DIR__ . '/../config/routes.php';
 
 $dbConnect = new DatabaseConnect();
 
-$httpMethod = $_SERVER['REQUEST_METHOD'] ?? '';
-$uri = $_SERVER['REQUEST_URI'] ?? '';
+$httpMethod = isset($_SERVER['REQUEST_METHOD']) ? stripslashes($_SERVER['REQUEST_METHOD']) : '';
+$uri = isset($_SERVER['REQUEST_URI']) ? stripslashes($_SERVER['REQUEST_URI']) : '';
 $pos = strpos($uri, '?');
 
 
@@ -37,8 +37,8 @@ switch ($routeInfo[0]) {
         $vars = $routeInfo[2];
         try {
             handleRouteFound($handler, $twig, $dbConnect, $vars);
-        } catch (Exception $e) {
-            handleError($e);
+        } catch (Exception $error) {
+            handleError($error);
         }
         break;
 }
@@ -46,13 +46,11 @@ switch ($routeInfo[0]) {
 function handleNotFound(): void
 {
     http_response_code(404);
-    header('HTTP/1.0 404 Not Found');
 }
 
 function handleMethodNotAllowed(): void
 {
     http_response_code(405);
-    header("HTTP/1.1 405 Method Not Allowed");
 }
 
 /**
@@ -76,7 +74,7 @@ function handleRouteFound(array $handler, Environment $twig, DatabaseConnect $db
     $controller = new $controllerName($twig, $dbConnect);
 
     if (!method_exists($controller, $methodName)) {
-        throw new Exception("La méthode " . htmlspecialchars($methodName, ENT_QUOTES, 'UTF-8') . " n'existe pas sur le contrôleur " . htmlspecialchars($controllerName, ENT_QUOTES, 'UTF-8') . ".");
+        throw new Exception("La méthode " . htmlentities($methodName, ENT_QUOTES, 'UTF-8') . " n'existe pas sur le contrôleur " . htmlentities($controllerName, ENT_QUOTES, 'UTF-8') . ".");
     }
 
     $controller->{$methodName}($vars);
@@ -87,9 +85,9 @@ function handleRouteFound(array $handler, Environment $twig, DatabaseConnect $db
  * @throws SyntaxError
  * @throws LoaderError
  */
-function handleError(Exception $e, Environment $twig): void
+function handleError(Exception $error, Environment $twig): void
 {
-    renderError($e->getMessage(), $twig);
+    renderError($error->getMessage(), $twig);
 }
 
 /**

@@ -30,19 +30,20 @@ class BaseController
         }
     }
 
-    protected function isUserLoggedIn(): bool
+    protected function isUserLoggedIn(array $session): bool
     {
-        $session = $this->getSession();
+        $session = $this->getSession($session);
         return isset($session['user_id']);
     }
+
 
     /**
      * @return array<string, mixed>|null
      */
-    protected function getLoggedInUser(): ?array
+    protected function getLoggedInUser(array $session): ?array
     {
-        $session = $this->getSession();
-        if ($this->isUserLoggedIn()) {
+        $session = $this->getSession($session);
+        if ($this->isUserLoggedIn($session)) {
             $loggedInUser = [
                 'user_id' => $session['user_id'],
                 'username' => $session['username'],
@@ -60,24 +61,25 @@ class BaseController
     /**
      * @return array<string, mixed>
      */
-    private function getSession(): array
+    private function getSession(array $session): array
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        return $_SESSION ?? [];
+        return $session ?? [];
     }
 
     /**
      * @param string $template
      * @param array<string, mixed> $context
+     * @param array<string, mixed> $session
      * @return string
      */
-    protected function render(string $template, array $context = []): string
+    protected function render(string $template, array $context = [], array $session = []): string
     {
         try {
-            $context['isUserLoggedIn'] = $this->isUserLoggedIn();
-            $context['loggedInUser'] = $this->getLoggedInUser();
+            $context['isUserLoggedIn'] = $this->isUserLoggedIn($session);
+            $context['loggedInUser'] = $this->getLoggedInUser($session);
 
             return $this->twig->render($template, $context);
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
@@ -85,9 +87,9 @@ class BaseController
         }
     }
 
-    protected function isAdmin(): bool
+    protected function isAdmin(array $session): bool
     {
-        $session = $this->getSession();
+        $session = $this->getSession($session);
         return isset($session['roles']) && $session['roles'] === 'ADMIN';
     }
 }
