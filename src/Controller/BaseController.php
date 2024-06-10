@@ -13,32 +13,20 @@ class BaseController
     protected Environment $twig;
     protected DatabaseConnect $db;
 
+    private bool $sessionStarted = false;
+
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         $this->twig = $twig;
         $this->db = $db;
-        $this->startSession();
+        $this->startSessionIfNotStarted();
     }
 
-    private function startSession(): void
+    private function startSessionIfNotStarted(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (!$this->sessionStarted) {
             session_start();
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $context
-     */
-    protected function render(string $template, array $context = []): void
-    {
-        try {
-            $context['isUserLoggedIn'] = $this->isUserLoggedIn();
-            $context['loggedInUser'] = $this->getLoggedInUser();
-
-            echo $this->twig->render($template, $context);
-        } catch (LoaderError | RuntimeError | SyntaxError $e) {
-            echo 'Error: ' . $e->getMessage();
+            $this->sessionStarted = true;
         }
     }
 
@@ -53,14 +41,34 @@ class BaseController
     protected function getLoggedInUser(): ?array
     {
         if ($this->isUserLoggedIn()) {
-            return [
+            $loggedInUser = [
                 'user_id' => $_SESSION['user_id'],
                 'username' => $_SESSION['username'],
                 'email' => $_SESSION['email'],
-                'isConfirmed' => $_SESSION['isConfirmed'],
-                'roles' => $_SESSION['roles'],
+                'isConfirmed' => $_SESSION['isConfirmed']
             ];
+            if (isset($_SESSION['roles'])) {
+                $loggedInUser['roles'] = $_SESSION['roles'];
+            }
+            return $loggedInUser;
         }
         return null;
+    }
+
+    /**
+     * @param string $template
+     * @param array<string, mixed> $context
+     * @return string
+     */
+    protected function render(string $template, array $context = []): string
+    {
+        try {
+            $context['isUserLoggedIn'] = $this->isUserLoggedIn();
+            $context['loggedInUser'] = $this->getLoggedInUser();
+
+            return $this->twig->render($template, $context);
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            return 'Error: ' . $e->getMessage();
+        }
     }
 }

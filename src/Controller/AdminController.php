@@ -19,29 +19,30 @@ class AdminController extends BaseController
         $this->usersRepository = new UsersRepository($db);
         $this->commentRepository = new CommentRepository($db);
 
+        $this->checkAdminAccess();
+    }
+
+    private function checkAdminAccess(): void
+    {
         if (!$this->isAdmin()) {
             header('Location: /');
-            exit();
         }
     }
 
     private function isAdmin(): bool
     {
-        if (isset($_SESSION['roles'])) {
-            return $_SESSION['roles'] === 'ADMIN';
-        } else {
-            return false;
-        }
+        return isset($_SESSION['roles']) && $_SESSION['roles'] === 'ADMIN';
     }
 
     public function index(): void
     {
         try {
-            $users = $this->usersRepository->getUserNotApproved(); // Correction de la faute de frappe
+            $users = $this->usersRepository->getUserNotApproved();
             $comments = $this->commentRepository->getUnconfirmedComments();
+
             $this->render('admin/index.twig', ['users' => $users, 'comments' => $comments]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            $this->renderError('Error: ' . $e->getMessage());
         }
     }
 
@@ -49,10 +50,10 @@ class AdminController extends BaseController
     {
         try {
             $this->commentRepository->confirmComment($id);
-            header('Location: /dashboard_admin');
-            exit();
+
+            $this->redirectToDashboard();
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            $this->renderError('Error: ' . $e->getMessage());
         }
     }
 
@@ -60,10 +61,20 @@ class AdminController extends BaseController
     {
         try {
             $this->usersRepository->confirmUser($id);
-            header('Location: /dashboard_admin');
-            exit();
+
+            $this->redirectToDashboard();
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            $this->renderError('Error: ' . $e->getMessage());
         }
+    }
+
+    private function renderError(string $message): void
+    {
+        $this->render('error.twig', ['message' => $message]);
+    }
+
+    private function redirectToDashboard(): void
+    {
+        header('Location: /dashboard_admin');
     }
 }

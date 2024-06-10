@@ -30,7 +30,7 @@ class DatabaseConnect
             ];
             $this->connect = new PDO($dsn, $this->user, $this->password, $options);
         } catch (PDOException $e) {
-            echo "Erreur de connexion à la base de données : " . $e->getMessage();
+            echo "Erreur de connexion à la base de données : " . htmlspecialchars($e->getMessage(), ENT_QUOTES);
         }
     }
 

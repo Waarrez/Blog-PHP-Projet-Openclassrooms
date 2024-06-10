@@ -10,8 +10,8 @@ $dispatcher = require __DIR__ . '/../config/routes.php';
 
 $dbConnect = new DatabaseConnect();
 
-$httpMethod = $_SERVER['REQUEST_METHOD'];
-$uri = $_SERVER['REQUEST_URI'];
+$httpMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+$uri = $_SERVER['REQUEST_URI'] ?? '';
 
 if (false !== $pos = strpos($uri, '?')) {
     $uri = substr($uri, 0, $pos);
@@ -22,11 +22,11 @@ $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
         http_response_code(404);
-        echo '404 Not Found';
+        header('HTTP/1.0 404 Not Found');
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         http_response_code(405);
-        echo '405 Method Not Allowed';
+        header("HTTP/1.1 405 Method Not Allowed");
         break;
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
@@ -55,7 +55,7 @@ switch ($routeInfo[0]) {
                 throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
             }
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            echo 'Error: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8');
         }
         break;
 }
