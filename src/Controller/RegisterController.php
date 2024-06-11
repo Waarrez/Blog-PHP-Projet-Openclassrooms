@@ -79,7 +79,8 @@ class RegisterController extends BaseController
     private function redirect(string $url): void
     {
         header("Location: $url");
-        exit();
+        // Utilisez return pour arrêter l'exécution au lieu de exit()
+        return;
     }
 
     /**
@@ -89,6 +90,7 @@ class RegisterController extends BaseController
      */
     private function getRequestMethod(): string
     {
-        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        // Déséchapper la variable avant de la retourner
+        return filter_var($_SERVER['REQUEST_METHOD'] ?? 'GET', FILTER_SANITIZE_STRING);
     }
 }
