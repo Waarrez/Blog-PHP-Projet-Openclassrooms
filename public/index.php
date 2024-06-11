@@ -8,7 +8,7 @@ $autoloadPath = realpath(__DIR__ . '/../vendor/autoload.php');
 $twigConfigPath = realpath(__DIR__ . '/../config/twig.php');
 $routesConfigPath = realpath(__DIR__ . '/../config/routes.php');
 
-if ($autoloadPath === false || $twigConfigPath === false || $routesConfigPath === false) {
+if ($autoloadPath === FALSE || $twigConfigPath === FALSE || $routesConfigPath === FALSE) {
     throw new Exception('Un chemin de fichier nécessaire est invalide.');
 }
 
@@ -19,13 +19,12 @@ $dispatcher = require $routesConfigPath;
 
 $dbConnect = new DatabaseConnect();
 
-$httpMethod = isset($_SERVER['REQUEST_METHOD']) ? htmlspecialchars($_SERVER['REQUEST_METHOD'], ENT_QUOTES, 'UTF-8') : '';
-$uri = isset($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8') : '';
+$httpMethod = isset($_SERVER['REQUEST_METHOD']) ? stripslashes($_SERVER['REQUEST_METHOD']) : '';
+$uri = isset($_SERVER['REQUEST_URI']) ? stripslashes($_SERVER['REQUEST_URI']) : '';
 
 if (!empty($uri) && false !== $pos = strpos($uri, '?')) {
     $uri = substr($uri, 0, $pos);
 }
-$uri = rawurldecode($uri);
 
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
@@ -66,7 +65,6 @@ switch ($routeInfo[0]) {
             $controller->{$methodName}(...array_values($vars));
         } catch (Exception $e) {
             http_response_code(500);
-            echo 'Une erreur est survenue. Veuillez réessayer plus tard.';
             error_log('Error: ' . $e->getMessage());
         }
         break;
