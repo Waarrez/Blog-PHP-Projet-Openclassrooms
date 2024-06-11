@@ -7,18 +7,47 @@ use PDOException;
 
 class DatabaseConnect
 {
+    /**
+     * @var string Server name.
+     */
     private string $server = "localhost";
+
+    /**
+     * @var string Database user.
+     */
     private string $user = "root";
+
+    /**
+     * @var string Database password.
+     */
     private string $password = "";
+
+    /**
+     * @var string Database name.
+     */
     private string $bdd = "p5";
+
+    /**
+     * @var string Database port.
+     */
     private string $port = "3307";
+
+    /**
+     * @var PDO|null Database connection.
+     */
     private ?PDO $connect = null;
 
+    /**
+     * DatabaseConnect constructor.
+     */
     public function __construct()
     {
         $this->connection();
     }
 
+    /**
+     * Establishes a database connection.
+     */
     public function connection(): void
     {
         try {
@@ -34,11 +63,19 @@ class DatabaseConnect
         }
     }
 
+    /**
+     * Closes the database connection.
+     */
     public function disconnect(): void
     {
         $this->connect = null;
     }
 
+    /**
+     * Returns the database connection.
+     *
+     * @return PDO|null Database connection.
+     */
     public function getConnection(): ?PDO
     {
         return $this->connect;
