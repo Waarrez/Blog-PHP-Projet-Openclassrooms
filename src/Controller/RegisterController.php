@@ -27,14 +27,17 @@ class RegisterController extends BaseController
      */
     public function processRegisterForm(): void
     {
-        if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") {
+        // Vérifie si la méthode de requête est POST
+        if ($this->getRequestMethod() === "POST") {
 
+            // Récupère et filtre les données du formulaire
             $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
             $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
             $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_STRING);
 
-            if ($username && $email && $password && $confirmPassword) {
+            // Vérifie que toutes les variables sont présentes et non vides
+            if ($this->isValidFormData($username, $email, $password, $confirmPassword)) {
                 if ($password !== $confirmPassword) {
                     throw new InvalidArgumentException("Les mots de passe ne correspondent pas");
                 }
@@ -43,15 +46,29 @@ class RegisterController extends BaseController
                 $success = $this->usersRepository->createUser($username, $email, $password);
 
                 // Redirige en cas de succès, sinon lance une exception
-                if ($success) {
+                if ($success === true) {
                     $this->redirect('/');
-                } else {
-                    throw new Exception("Erreur lors de la création de l'utilisateur");
                 }
-            } else {
-                throw new InvalidArgumentException("Tous les champs doivent être complétés");
+
+                throw new Exception("Erreur lors de la création de l'utilisateur");
             }
+
+            throw new InvalidArgumentException("Tous les champs doivent être complétés");
         }
+    }
+
+    /**
+     * Vérifie si les données du formulaire sont valides.
+     *
+     * @param string|null $username Le nom d'utilisateur
+     * @param string|false $email L'email
+     * @param string|null $password Le mot de passe
+     * @param string|null $confirmPassword La confirmation du mot de passe
+     * @return bool True si les données sont valides, sinon False
+     */
+    private function isValidFormData($username, $email, $password, $confirmPassword): bool
+    {
+        return $username !== null && $email !== false && $password !== null && $confirmPassword !== null;
     }
 
     /**
@@ -62,5 +79,16 @@ class RegisterController extends BaseController
     private function redirect(string $url): void
     {
         header("Location: $url");
+        exit();
+    }
+
+    /**
+     * Récupère la méthode de la requête HTTP.
+     *
+     * @return string La méthode de la requête HTTP
+     */
+    private function getRequestMethod(): string
+    {
+        return $_SERVER['REQUEST_METHOD'] ?? 'GET';
     }
 }
