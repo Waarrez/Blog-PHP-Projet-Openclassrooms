@@ -47,6 +47,8 @@ class DatabaseConnect
 
     /**
      * Establishes a database connection.
+     *
+     * @return void
      */
     public function connection(): void
     {
@@ -65,6 +67,8 @@ class DatabaseConnect
 
     /**
      * Closes the database connection.
+     *
+     * @return void
      */
     public function disconnect(): void
     {
