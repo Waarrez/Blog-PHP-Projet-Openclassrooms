@@ -21,17 +21,17 @@ class AdminController extends BaseController
 
         if (!$this->isAdmin()) {
             header('Location: /');
-            exit();
         }
     }
 
     private function isAdmin(): bool
     {
-        if (isset($_SESSION['roles'])) {
-            return $_SESSION['roles'] === 'ADMIN';
-        } else {
-            return false;
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            if (isset($_SESSION['roles'])) {
+                return $_SESSION['roles'] === 'ADMIN';
+            }
         }
+        return false;
     }
 
     public function index(): void
@@ -41,7 +41,7 @@ class AdminController extends BaseController
             $comments = $this->commentRepository->getUnconfirmedComments();
             $this->render('admin/index.twig', ['users' => $users, 'comments' => $comments]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 
@@ -50,9 +50,8 @@ class AdminController extends BaseController
         try {
             $this->commentRepository->confirmComment($id);
             header('Location: /dashboard_admin');
-            exit();
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 
@@ -61,9 +60,8 @@ class AdminController extends BaseController
         try {
             $this->usersRepository->confirmUser($id);
             header('Location: /dashboard_admin');
-            exit();
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 }
