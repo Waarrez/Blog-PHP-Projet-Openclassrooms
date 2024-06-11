@@ -4,6 +4,7 @@ namespace Root\P5\Controller;
 
 use AllowDynamicProperties;
 use Exception;
+use InvalidArgumentException;
 use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
@@ -20,7 +21,9 @@ class RegisterController extends BaseController
     }
 
     /**
-     * @throws Exception
+     * Traite le formulaire d'inscription.
+     *
+     * @throws Exception En cas d'erreur pendant le traitement du formulaire
      */
     public function processRegisterForm(): void
     {
@@ -31,21 +34,33 @@ class RegisterController extends BaseController
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
             $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_STRING);
 
-            if ($username !== null && $email !== false && $password !== null && $confirmPassword !== null) {
+            if ($username && $email && $password && $confirmPassword) {
                 if ($password !== $confirmPassword) {
-                    throw new Exception("Les mots de passe ne correspondent pas");
+                    throw new InvalidArgumentException("Les mots de passe ne correspondent pas");
                 }
 
+                // Création de l'utilisateur
                 $success = $this->usersRepository->createUser($username, $email, $password);
 
-                if ($success === true) {
-                    header('Location: /');
+                // Redirige en cas de succès, sinon lance une exception
+                if ($success) {
+                    $this->redirect('/');
+                } else {
+                    throw new Exception("Erreur lors de la création de l'utilisateur");
                 }
-
-                throw new Exception("Erreur lors de la création de l'utilisateur");
+            } else {
+                throw new InvalidArgumentException("Tous les champs doivent être complétés");
             }
-
-            throw new Exception("Tous les champs doivent être complétés");
         }
+    }
+
+    /**
+     * Redirige vers une URL donnée.
+     *
+     * @param string $url L'URL vers laquelle rediriger
+     */
+    private function redirect(string $url): void
+    {
+        header("Location: $url");
     }
 }
