@@ -26,7 +26,7 @@ class CommentRepository
         }
 
         $comment = new Comment();
-        $comment->setId($row['id']);
+        $comment->setCommentId($row['id']);
         $comment->setContent($row['content']);
         $comment->setPostId($row['post_id']);
         $comment->setUserId($row['user_id']);
