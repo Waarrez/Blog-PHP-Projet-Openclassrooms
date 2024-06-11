@@ -30,7 +30,7 @@ class Comment
     /**
      * Obtient l'identifiant du commentaire.
      *
-     * @return int
+     * @return int L'identifiant du commentaire
      */
     public function getId(): int
     {
@@ -40,7 +40,7 @@ class Comment
     /**
      * Définit l'identifiant du commentaire.
      *
-     * @param int $id Identifiant du commentaire
+     * @param int $id L'identifiant du commentaire
      */
     public function setId(int $id): void
     {
@@ -50,7 +50,7 @@ class Comment
     /**
      * Obtient le contenu du commentaire.
      *
-     * @return string
+     * @return string Le contenu du commentaire
      */
     public function getContent(): string
     {
@@ -60,7 +60,7 @@ class Comment
     /**
      * Définit le contenu du commentaire.
      *
-     * @param string $content Contenu du commentaire
+     * @param string $content Le contenu du commentaire
      */
     public function setContent(string $content): void
     {
@@ -70,7 +70,7 @@ class Comment
     /**
      * Obtient l'identifiant du post associé au commentaire.
      *
-     * @return int
+     * @return int L'identifiant du post associé au commentaire
      */
     public function getPostId(): int
     {
@@ -80,7 +80,7 @@ class Comment
     /**
      * Définit l'identifiant du post associé au commentaire.
      *
-     * @param int $postId Identifiant du post
+     * @param int $postId L'identifiant du post
      */
     public function setPostId(int $postId): void
     {
@@ -90,7 +90,7 @@ class Comment
     /**
      * Obtient l'identifiant de l'utilisateur qui a créé le commentaire.
      *
-     * @return int
+     * @return int L'identifiant de l'utilisateur
      */
     public function getUserId(): int
     {
@@ -100,7 +100,7 @@ class Comment
     /**
      * Définit l'identifiant de l'utilisateur qui a créé le commentaire.
      *
-     * @param int $userId Identifiant de l'utilisateur
+     * @param int $userId L'identifiant de l'utilisateur
      */
     public function setUserId(int $userId): void
     {
@@ -110,7 +110,7 @@ class Comment
     /**
      * Obtient le nom d'utilisateur de l'auteur du commentaire.
      *
-     * @return string
+     * @return string Le nom d'utilisateur de l'auteur du commentaire
      */
     public function getUsername(): string
     {
@@ -120,7 +120,7 @@ class Comment
     /**
      * Définit le nom d'utilisateur de l'auteur du commentaire.
      *
-     * @param string $username Nom d'utilisateur
+     * @param string $username Le nom d'utilisateur
      */
     public function setUsername(string $username): void
     {
@@ -130,7 +130,7 @@ class Comment
     /**
      * Indique si le commentaire est confirmé ou non.
      *
-     * @return bool
+     * @return bool True si le commentaire est confirmé, sinon False
      */
     public function isConfirmed(): bool
     {
@@ -150,7 +150,7 @@ class Comment
     /**
      * Obtient le titre du post associé au commentaire.
      *
-     * @return string
+     * @return string Le titre du post associé au commentaire
      */
     public function getPostTitle(): string
     {
@@ -160,7 +160,7 @@ class Comment
     /**
      * Définit le titre du post associé au commentaire.
      *
-     * @param string $postTitle Titre du post
+     * @param string $postTitle Le titre du post
      */
     public function setPostTitle(string $postTitle): void
     {
