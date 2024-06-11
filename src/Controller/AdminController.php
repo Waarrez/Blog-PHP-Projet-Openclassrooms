@@ -34,18 +34,20 @@ class AdminController extends BaseController
 
         if (!$this->isAdmin()) {
             header('Location: /');
-            exit(); // Stop further execution to prevent unauthorized access.
         }
     }
 
-    /**
-     * Checks if the current user is an admin.
-     *
-     * @return bool True if the user is an admin, false otherwise.
-     */
+    private function getUserRole(): string
+    {
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['roles'])) {
+            return $_SESSION['roles'];
+        }
+        return 'USER';
+    }
+
     private function isAdmin(): bool
     {
-        return (isset($_SESSION['roles']) && $_SESSION['roles'] === 'ADMIN');
+        return $this->getUserRole() === 'ADMIN';
     }
 
     /**
@@ -72,7 +74,6 @@ class AdminController extends BaseController
         try {
             $this->commentRepository->confirmComment($id);
             header('Location: /dashboard_admin');
-            exit(); // Stop further execution after redirect.
         } catch (Exception $e) {
             error_log('Error: ' . $e->getMessage());
         }
@@ -88,7 +89,6 @@ class AdminController extends BaseController
         try {
             $this->usersRepository->confirmUser($id);
             header('Location: /dashboard_admin');
-            exit(); // Stop further execution after redirect.
         } catch (Exception $e) {
             error_log('Error: ' . $e->getMessage());
         }
