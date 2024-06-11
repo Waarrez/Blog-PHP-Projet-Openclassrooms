@@ -25,27 +25,25 @@ class RegisterController extends BaseController
     public function processRegisterForm(): void
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $username = $_POST['username'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $confirmPassword = $_POST['confirmPassword'];
+            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+            $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_STRING);
 
-            if (!empty($username) && !empty($email) && !empty($password) && !empty($confirmPassword)) {
+            if ($username && $email && $password && $confirmPassword) {
                 if ($password !== $confirmPassword) {
-                    echo "Les mots de passe ne correspondent pas";
-                    exit();
+                    throw new Exception("Les mots de passe ne correspondent pas");
                 }
 
-                $success = $this->usersRepository->createUser($username, $email, $password); // Correction de la faute de frappe
+                $success = $this->usersRepository->createUser($username, $email, $password);
 
                 if ($success) {
                     header('Location: /');
                 } else {
-                    echo "Erreur lors de la création de l'utilisateur";
-                    exit();
+                    throw new Exception("Erreur lors de la création de l'utilisateur");
                 }
             } else {
-                echo "Tous les champs doivent être complétés";
+                throw new Exception("Tous les champs doivent être complétés");
             }
         }
     }
