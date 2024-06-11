@@ -8,11 +8,6 @@ use PDOException;
 class DatabaseConnect
 {
     /**
-     * @var string Server name.
-     */
-    private string $server = "localhost";
-
-    /**
      * @var string Database user.
      */
     private string $user = "root";
@@ -21,16 +16,6 @@ class DatabaseConnect
      * @var string Database password.
      */
     private string $password = "";
-
-    /**
-     * @var string Database name.
-     */
-    private string $bdd = "p5";
-
-    /**
-     * @var string Database port.
-     */
-    private string $port = "3307";
 
     /**
      * @var PDO|null Database connection.
@@ -53,7 +38,7 @@ class DatabaseConnect
     public function connection(): void
     {
         try {
-            $dsn = "mysql:host=$this->server;port=$this->port;dbname=$this->bdd;charset=utf8mb4";
+            $dsn = "mysql:host=localhost;port=3307;dbname=p5;charset=utf8mb4";
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
