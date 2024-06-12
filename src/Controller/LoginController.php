@@ -55,10 +55,9 @@ class LoginController extends BaseController
     private function getRequestMethod(): string
     {
         $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
-        $sanitizedRequestMethod = filter_var($requestMethod, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $sanitizedRequestMethod = filter_var($requestMethod, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
         return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
     }
-
 
     private function getPostData(string $key, int $filter)
     {
@@ -90,6 +89,7 @@ class LoginController extends BaseController
 
     private function redirect(string $url): void
     {
-        header('Location: ' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8'));
+        header('Location: ' . $url);
+        exit();
     }
 }
