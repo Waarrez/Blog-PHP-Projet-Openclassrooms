@@ -29,7 +29,8 @@ class PostsController extends BaseController
             $posts = $this->postsRepository->getPosts();
             $this->render('posts/index.twig', ['posts' => $posts]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log($e->getMessage());
+            $this->render('error.twig', ['message' => 'An error occurred while fetching posts.']);
         }
     }
 
@@ -37,20 +38,20 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
-        $userConfirmed = $_SESSION["isConfirmed"];
+        $userConfirmed = $_SESSION["isConfirmed"] ?? false;
         if (!$userConfirmed) {
             header('Location: /');
-            exit();
         }
 
         try {
-            $posts = $this->postsRepository->getPostsByUser($_SESSION["user_id"]);
+            $userId = $_SESSION["user_id"];
+            $posts = $this->postsRepository->getPostsByUser($userId);
             $this->render('posts/dashboard_post.twig', ['posts' => $posts]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log($e->getMessage());
+            $this->render('error.twig', ['message' => 'An error occurred while fetching dashboard posts.']);
         }
     }
 
@@ -58,7 +59,6 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
         $this->render('posts/add_post.twig');
@@ -70,10 +70,15 @@ class PostsController extends BaseController
     public function addPostForm(): void
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $title = $_POST['title'];
-            $chapo = $_POST['chapo'];
-            $content = $_POST['content'];
-            $author = $_SESSION['username'];
+            if (!isset($_SESSION["user_id"])) {
+                header('Location: /login');
+                exit();
+            }
+
+            $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
+            $chapo = filter_input(INPUT_POST, 'chapo', FILTER_SANITIZE_SPECIAL_CHARS);
+            $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
+            $author = $_SESSION['username'] ?? '';
             $userId = $_SESSION['user_id'];
 
             if (!empty($title) && !empty($chapo) && !empty($content)) {
@@ -82,11 +87,11 @@ class PostsController extends BaseController
                 if ($success) {
                     header('Location: /dashboard_posts');
                 } else {
-                    echo "Erreur lors de la création du post";
+                    $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
                     exit();
                 }
             } else {
-                echo "Touts les champs doivent être complété";
+                $this->render('error.twig', ['message' => 'Tous les champs doivent être complétés']);
             }
         }
     }
@@ -96,7 +101,6 @@ class PostsController extends BaseController
         try {
             $post = $this->postsRepository->getPostById($postId);
             $comments = $this->commentsRepository->getCommentsByPost($postId);
-
             $userIsAuthenticated = isset($_SESSION['user_id']);
 
             $this->render('posts/view_post.twig', [
@@ -105,7 +109,8 @@ class PostsController extends BaseController
                 'userIsAuthenticated' => $userIsAuthenticated
             ]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log($e->getMessage());
+            $this->render('error.twig', ['message' => 'An error occurred while fetching the post.']);
         }
     }
 
@@ -114,12 +119,11 @@ class PostsController extends BaseController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
                 header('Location: /login');
-                exit();
             }
 
-            $content = $_POST['content'];
+            $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
             $userId = $_SESSION['user_id'];
-            $postId = $_POST['post_id'];
+            $postId = filter_input(INPUT_POST, 'post_id', FILTER_VALIDATE_INT);
 
             if (!empty($content)) {
                 try {
@@ -128,14 +132,15 @@ class PostsController extends BaseController
                     if ($success) {
                         header("Location: /post/{$postId}");
                     } else {
-                        echo "Erreur lors de l'ajout du commentaire";
+                        $this->render('error.twig', ['message' => 'Erreur lors de l\'ajout du commentaire']);
                         exit();
                     }
                 } catch (Exception $e) {
-                    echo 'Error: ' . $e->getMessage();
+                    error_log($e->getMessage());
+                    $this->render('error.twig', ['message' => 'An error occurred while adding the comment.']);
                 }
             } else {
-                echo "Le champ de commentaire ne peut pas être vide";
+                $this->render('error.twig', ['message' => 'Le champ de commentaire ne peut pas être vide']);
             }
         }
     }
@@ -144,25 +149,25 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
         try {
             $post = $this->postsRepository->getPostById($postId);
 
             if ($post === null) {
-                echo 'Post not found';
+                $this->render('error.twig', ['message' => 'Post not found']);
                 return;
             }
 
             if ($post->getUserId() !== $_SESSION['user_id']) {
-                echo 'Vous n\'avez pas l\'autorisation de modifier ce post.';
+                $this->render('error.twig', ['message' => 'Vous n\'avez pas l\'autorisation de modifier ce post.']);
                 return;
             }
 
             $this->render('posts/edit_post.twig', ['post' => $post]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log($e->getMessage());
+            $this->render('error.twig', ['message' => 'An error occurred while fetching the post for editing.']);
         }
     }
 
@@ -173,16 +178,15 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $title = $_POST['title'];
-            $chapo = $_POST['chapo'];
-            $content = $_POST['content'];
-            $author = $_SESSION['username'];
+            $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
+            $chapo = filter_input(INPUT_POST, 'chapo', FILTER_SANITIZE_SPECIAL_CHARS);
+            $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
+            $author = $_SESSION['username'] ?? '';
             $userId = $_SESSION['user_id'];
-            $postId = $_POST['postId'];
+            $postId = filter_input(INPUT_POST, 'postId', FILTER_VALIDATE_INT);
 
             if (!empty($title) && !empty($chapo) && !empty($content)) {
                 $success = $this->postsRepository->editPost($postId, $title, $chapo, $content, $author, $userId);
@@ -190,11 +194,10 @@ class PostsController extends BaseController
                 if ($success) {
                     header('Location: /dashboard_posts');
                 } else {
-                    echo "Erreur lors de la création du post";
-                    exit();
+                    $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
                 }
             } else {
-                echo "Touts les champs doivent être complété";
+                $this->render('error.twig', ['message' => 'Tous les champs doivent être complétés']);
             }
         }
     }
@@ -203,7 +206,6 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
         try {
@@ -211,10 +213,11 @@ class PostsController extends BaseController
             if ($success) {
                 header('Location: /dashboard_posts');
             } else {
-                echo "Erreur lors de la suppression du post";
+                $this->render('error.twig', ['message' => 'Erreur lors de la suppression du post']);
             }
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log($e->getMessage());
+            $this->render('error.twig', ['message' => 'An error occurred while deleting the post.']);
         }
     }
 }

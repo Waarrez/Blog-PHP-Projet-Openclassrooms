@@ -31,10 +31,10 @@ class RegisterController extends BaseController
         if ($this->getRequestMethod() === "POST") {
 
             // Récupère et filtre les données du formulaire
-            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+            $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS);
             $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-            $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_STRING);
+            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
+            $confirmPassword = filter_input(INPUT_POST, 'confirmPassword', FILTER_SANITIZE_SPECIAL_CHARS);
 
             // Vérifie que toutes les variables sont présentes et non vides
             if ($this->isValidFormData($username, $email, $password, $confirmPassword)) {
@@ -79,7 +79,6 @@ class RegisterController extends BaseController
     private function redirect(string $url): void
     {
         header("Location: $url");
-        // Utilisez return pour arrêter l'exécution au lieu de exit()
         return;
     }
 
@@ -90,7 +89,6 @@ class RegisterController extends BaseController
      */
     private function getRequestMethod(): string
     {
-        // Déséchapper la variable avant de la retourner
-        return filter_var($_SERVER['REQUEST_METHOD'] ?? 'GET', FILTER_SANITIZE_STRING);
+        return filter_var($_SERVER['REQUEST_METHOD'] ?? 'GET', FILTER_SANITIZE_SPECIAL_CHARS);
     }
 }

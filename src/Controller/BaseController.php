@@ -38,7 +38,17 @@ class BaseController
 
             echo $this->twig->render($template, $context);
         } catch (LoaderError | RuntimeError | SyntaxError $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log($e->getMessage());
+            $this->renderErrorPage('Une erreur est survenue lors du rendu de la page.');
+        }
+    }
+
+    private function renderErrorPage(string $message): void
+    {
+        try {
+            echo $this->twig->render('error.twig', ['message' => $message]);
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {
+            error_log($e->getMessage());
         }
     }
 
@@ -54,11 +64,11 @@ class BaseController
     {
         if ($this->isUserLoggedIn()) {
             return [
-                'user_id' => $_SESSION['user_id'],
-                'username' => $_SESSION['username'],
-                'email' => $_SESSION['email'],
-                'isConfirmed' => $_SESSION['isConfirmed'],
-                'roles' => $_SESSION['roles'],
+                'user_id' => $_SESSION['user_id'] ?? null,
+                'username' => $_SESSION['username'] ?? null,
+                'email' => $_SESSION['email'] ?? null,
+                'isConfirmed' => $_SESSION['isConfirmed'] ?? null,
+                'roles' => $_SESSION['roles'] ?? null,
             ];
         }
         return null;
