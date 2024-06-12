@@ -23,8 +23,8 @@ class LoginController extends BaseController
     public function processLoginForm(): void
     {
         if ($this->getRequestMethod() === 'POST') {
-            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
+            $email = $this->getPostData('email', FILTER_SANITIZE_EMAIL);
+            $password = $this->getPostData('password', FILTER_SANITIZE_SPECIAL_CHARS);
 
             if (!$email || !$password) {
                 $this->render('login/login.twig', ['error' => 'Email ou mot de passe non fourni']);
@@ -56,14 +56,19 @@ class LoginController extends BaseController
         return $_SERVER['REQUEST_METHOD'] ?? '';
     }
 
+    private function getPostData(string $key, int $filter)
+    {
+        return filter_input(INPUT_POST, $key, $filter);
+    }
+
     private function setSessionUser($user): void
     {
         $this->startSession();
-        $_SESSION['user_id'] = $user->id;
-        $_SESSION['username'] = $user->username;
-        $_SESSION['email'] = $user->email;
-        $_SESSION['isConfirmed'] = $user->isConfirmed;
-        $_SESSION['roles'] = $user->roles;
+        $_SESSION['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
+        $_SESSION['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
+        $_SESSION['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
+        $_SESSION['isConfirmed'] = htmlspecialchars($user->isConfirmed, ENT_QUOTES, 'UTF-8');
+        $_SESSION['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
     }
 
     private function startSession(): void
@@ -81,7 +86,7 @@ class LoginController extends BaseController
 
     private function redirect(string $url): void
     {
-        header('Location: ' . $url);
+        header('Location: ' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8'));
         exit;
     }
 }
