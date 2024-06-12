@@ -19,8 +19,13 @@ $dispatcher = require $routesConfigPath;
 
 $dbConnect = new DatabaseConnect();
 
-$httpMethod = isset($_SERVER['REQUEST_METHOD']) ? stripslashes(htmlspecialchars($_SERVER['REQUEST_METHOD'], ENT_QUOTES, 'UTF-8')) : '';
-$uri = isset($_SERVER['REQUEST_URI']) ? stripslashes(htmlspecialchars($_SERVER['REQUEST_URI'], ENT_QUOTES, 'UTF-8')) : '';
+$requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+$httpMethod = htmlspecialchars($requestMethod, ENT_QUOTES, 'UTF-8');
+$httpMethod = stripslashes($httpMethod);
+
+$requestURI = $_SERVER['REQUEST_URI'] ?? '';
+$uri = htmlspecialchars($requestURI, ENT_QUOTES, 'UTF-8');
+$uri = stripslashes($uri);
 
 if (!empty($uri) && false !== $pos = strpos($uri, '?')) {
     $uri = substr($uri, 0, $pos);
