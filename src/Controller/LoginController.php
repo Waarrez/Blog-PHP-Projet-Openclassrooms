@@ -56,7 +56,7 @@ class LoginController extends BaseController
     private function getRequestMethod(): string
     {
         $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
-        $sanitizedRequestMethod = filter_var($requestMethod, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+        $sanitizedRequestMethod = filter_var(stripslashes($requestMethod), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
     }
 
