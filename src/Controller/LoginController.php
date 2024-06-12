@@ -2,13 +2,11 @@
 
 namespace Root\P5\Controller;
 
-use AllowDynamicProperties;
 use Exception;
 use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
 
-#[AllowDynamicProperties]
 class LoginController extends BaseController
 {
     private UsersRepository $usersRepository;
@@ -24,7 +22,7 @@ class LoginController extends BaseController
      */
     public function processLoginForm(): void
     {
-        if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === "POST") {
+        if ($this->getRequestMethod() === 'POST') {
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 
@@ -36,13 +34,8 @@ class LoginController extends BaseController
             $user = $this->usersRepository->loginUser($email, $password);
 
             if ($user !== null) {
-                $_SESSION['user_id'] = $user->id;
-                $_SESSION['username'] = $user->username;
-                $_SESSION['email'] = $user->email;
-                $_SESSION['isConfirmed'] = $user->isConfirmed;
-                $_SESSION['roles'] = $user->roles;
-
-                header('Location: /');
+                $this->setSessionUser($user);
+                $this->redirect('/');
             } else {
                 $this->render('login/login.twig', ['error' => 'L\'email ou le mot de passe est incorrect.']);
             }
@@ -53,12 +46,42 @@ class LoginController extends BaseController
 
     public function logout(): void
     {
+        $this->startSession();
+        $this->clearSession();
+        $this->redirect('/');
+    }
+
+    private function getRequestMethod(): string
+    {
+        return $_SERVER['REQUEST_METHOD'] ?? '';
+    }
+
+    private function setSessionUser($user): void
+    {
+        $this->startSession();
+        $_SESSION['user_id'] = $user->id;
+        $_SESSION['username'] = $user->username;
+        $_SESSION['email'] = $user->email;
+        $_SESSION['isConfirmed'] = $user->isConfirmed;
+        $_SESSION['roles'] = $user->roles;
+    }
+
+    private function startSession(): void
+    {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+    }
 
+    private function clearSession(): void
+    {
         session_unset();
         session_destroy();
-        header('Location: /');
+    }
+
+    private function redirect(string $url): void
+    {
+        header('Location: ' . $url);
+        exit;
     }
 }
