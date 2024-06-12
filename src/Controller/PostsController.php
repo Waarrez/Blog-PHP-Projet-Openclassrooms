@@ -30,7 +30,7 @@ class PostsController extends BaseController
             $this->render('posts/index.twig', ['posts' => $posts]);
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $this->render('error.twig', ['message' => 'An error occurred while fetching posts.']);
+            $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération des articles.']);
         }
     }
 
@@ -38,11 +38,13 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         $userConfirmed = $_SESSION["isConfirmed"] ?? false;
         if (!$userConfirmed) {
             header('Location: /');
+            exit();
         }
 
         try {
@@ -51,7 +53,7 @@ class PostsController extends BaseController
             $this->render('posts/dashboard_post.twig', ['posts' => $posts]);
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $this->render('error.twig', ['message' => 'An error occurred while fetching dashboard posts.']);
+            $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération des articles du tableau de bord.']);
         }
     }
 
@@ -59,6 +61,7 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         $this->render('posts/add_post.twig');
@@ -86,9 +89,9 @@ class PostsController extends BaseController
 
                 if ($success) {
                     header('Location: /dashboard_posts');
+                    exit();
                 } else {
                     $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
-                    exit();
                 }
             } else {
                 $this->render('error.twig', ['message' => 'Tous les champs doivent être complétés']);
@@ -110,7 +113,7 @@ class PostsController extends BaseController
             ]);
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $this->render('error.twig', ['message' => 'An error occurred while fetching the post.']);
+            $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération de l\'article.']);
         }
     }
 
@@ -119,6 +122,7 @@ class PostsController extends BaseController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
                 header('Location: /login');
+                exit();
             }
 
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -131,13 +135,13 @@ class PostsController extends BaseController
 
                     if ($success) {
                         header("Location: /post/{$postId}");
+                        exit();
                     } else {
                         $this->render('error.twig', ['message' => 'Erreur lors de l\'ajout du commentaire']);
-                        exit();
                     }
                 } catch (Exception $e) {
                     error_log($e->getMessage());
-                    $this->render('error.twig', ['message' => 'An error occurred while adding the comment.']);
+                    $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de l\'ajout du commentaire.']);
                 }
             } else {
                 $this->render('error.twig', ['message' => 'Le champ de commentaire ne peut pas être vide']);
@@ -149,25 +153,26 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         try {
             $post = $this->postsRepository->getPostById($postId);
 
             if ($post === null) {
-                $this->render('error.twig', ['message' => 'Post not found']);
+                $this->render('error.twig', ['message' => 'Article non trouvé']);
                 return;
             }
 
             if ($post->getUserId() !== $_SESSION['user_id']) {
-                $this->render('error.twig', ['message' => 'Vous n\'avez pas l\'autorisation de modifier ce post.']);
+                $this->render('error.twig', ['message' => 'Vous n\'avez pas l\'autorisation de modifier cet article.']);
                 return;
             }
 
             $this->render('posts/edit_post.twig', ['post' => $post]);
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $this->render('error.twig', ['message' => 'An error occurred while fetching the post for editing.']);
+            $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération de l\'article pour l\'édition.']);
         }
     }
 
@@ -178,6 +183,7 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -193,8 +199,9 @@ class PostsController extends BaseController
 
                 if ($success) {
                     header('Location: /dashboard_posts');
+                    exit();
                 } else {
-                    $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
+                    $this->render('error.twig', ['message' => 'Erreur lors de la modification de l\'article']);
                 }
             } else {
                 $this->render('error.twig', ['message' => 'Tous les champs doivent être complétés']);
@@ -206,6 +213,7 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         try {
@@ -213,11 +221,11 @@ class PostsController extends BaseController
             if ($success) {
                 header('Location: /dashboard_posts');
             } else {
-                $this->render('error.twig', ['message' => 'Erreur lors de la suppression du post']);
+                $this->render('error.twig', ['message' => 'Erreur lors de la suppression de l\'article']);
             }
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $this->render('error.twig', ['message' => 'An error occurred while deleting the post.']);
+            $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la suppression de l\'article.']);
         }
     }
 }

@@ -53,7 +53,7 @@ class LoginController extends BaseController
 
     private function getRequestMethod(): string
     {
-        return $_SERVER['REQUEST_METHOD'] ?? '';
+        return filter_var($_SERVER['REQUEST_METHOD'] ?? '', FILTER_SANITIZE_STRING);
     }
 
     private function getPostData(string $key, int $filter)
@@ -87,6 +87,5 @@ class LoginController extends BaseController
     private function redirect(string $url): void
     {
         header('Location: ' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8'));
-        exit;
     }
 }
