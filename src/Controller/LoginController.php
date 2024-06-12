@@ -67,7 +67,7 @@ class LoginController extends BaseController
 
     private function setSessionUser($user, &$session): void
     {
-        $this->startSession();
+        $this->startSession($session);
         $session['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
         $session['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
         $session['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
@@ -75,11 +75,12 @@ class LoginController extends BaseController
         $session['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
     }
 
-    private function startSession(): void
+    private function startSession(&$session): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        $session = &$_SESSION;
     }
 
     private function clearSession(): void
