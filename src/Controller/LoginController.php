@@ -36,6 +36,7 @@ class LoginController extends BaseController
             if ($user !== null) {
                 $this->setSessionUser($user);
                 $this->redirect('/');
+                return;
             } else {
                 $this->render('login/login.twig', ['error' => 'L\'email ou le mot de passe est incorrect.']);
                 return;
@@ -90,6 +91,5 @@ class LoginController extends BaseController
     private function redirect(string $url): void
     {
         header('Location: ' . $url);
-        exit();
     }
 }
