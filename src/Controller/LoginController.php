@@ -34,7 +34,7 @@ class LoginController extends BaseController
             $user = $this->usersRepository->loginUser($email, $password);
 
             if ($user !== null) {
-                $this->setSessionUser($user);
+                $this->setSessionUser($user, $_SESSION); // Pass $_SESSION as a parameter
                 $this->redirect('/');
                 return;
             } else {
@@ -65,14 +65,14 @@ class LoginController extends BaseController
         return filter_input(INPUT_POST, $key, $filter);
     }
 
-    private function setSessionUser($user): void
+    private function setSessionUser($user, &$session): void
     {
         $this->startSession();
-        $_SESSION['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
-        $_SESSION['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
-        $_SESSION['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
-        $_SESSION['isConfirmed'] = htmlspecialchars($user->isConfirmed, ENT_QUOTES, 'UTF-8');
-        $_SESSION['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
+        $session['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
+        $session['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
+        $session['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
+        $session['isConfirmed'] = htmlspecialchars($user->isConfirmed, ENT_QUOTES, 'UTF-8');
+        $session['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
     }
 
     private function startSession(): void
