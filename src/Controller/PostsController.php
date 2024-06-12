@@ -78,9 +78,9 @@ class PostsController extends BaseController
             $chapo = filter_input(INPUT_POST, 'chapo', FILTER_SANITIZE_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
             $author = $_SESSION['username'] ?? '';
-            $userId = $_SESSION['user_id'];
+            $userId = $_SESSION['user_id'] ?? null;
 
-            if (!empty($title) && !empty($chapo) && !empty($content)) {
+            if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null) {
                 $success = $this->postsRepository->addPost($title, $chapo, $content, $userId, $author);
 
                 if ($success) {
@@ -99,6 +99,7 @@ class PostsController extends BaseController
         try {
             $post = $this->postsRepository->getPostById($postId);
             $comments = $this->commentsRepository->getCommentsByPost($postId);
+
             $userIsAuthenticated = isset($_SESSION['user_id']);
 
             $this->render('posts/view_post.twig', [
@@ -120,10 +121,10 @@ class PostsController extends BaseController
             }
 
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
-            $userId = $_SESSION['user_id'];
+            $userId = $_SESSION['user_id'] ?? null;
             $postId = filter_input(INPUT_POST, 'post_id', FILTER_VALIDATE_INT);
 
-            if (!empty($content)) {
+            if (!empty($content) && $userId !== null) {
                 try {
                     $success = $this->commentsRepository->addComment($postId, $content, $userId);
 
@@ -182,10 +183,10 @@ class PostsController extends BaseController
             $chapo = filter_input(INPUT_POST, 'chapo', FILTER_SANITIZE_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
             $author = $_SESSION['username'] ?? '';
-            $userId = $_SESSION['user_id'];
+            $userId = $_SESSION['user_id'] ?? null;
             $postId = filter_input(INPUT_POST, 'postId', FILTER_VALIDATE_INT);
 
-            if (!empty($title) && !empty($chapo) && !empty($content)) {
+            if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null) {
                 $success = $this->postsRepository->editPost($postId, $title, $chapo, $content, $author, $userId);
 
                 if ($success) {
@@ -218,3 +219,4 @@ class PostsController extends BaseController
         }
     }
 }
+

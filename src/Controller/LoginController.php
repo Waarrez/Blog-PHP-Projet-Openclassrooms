@@ -34,7 +34,7 @@ class LoginController extends BaseController
             $user = $this->usersRepository->loginUser($email, $password);
 
             if ($user !== null) {
-                $this->setSessionUser($user, $_SESSION); // Pass $_SESSION as a parameter
+                $this->setSessionUser($user);
                 $this->redirect('/');
                 return;
             } else {
@@ -55,7 +55,7 @@ class LoginController extends BaseController
 
     private function getRequestMethod(): string
     {
-        $requestMethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
         $sanitizedRequestMethod = filter_var(stripslashes($requestMethod), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
     }
@@ -65,22 +65,21 @@ class LoginController extends BaseController
         return filter_input(INPUT_POST, $key, $filter);
     }
 
-    private function setSessionUser($user, &$session): void
+    private function setSessionUser($user): void
     {
-        $this->startSession($session);
-        $session['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
-        $session['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
-        $session['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
-        $session['isConfirmed'] = htmlspecialchars($user->isConfirmed, ENT_QUOTES, 'UTF-8');
-        $session['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
+        $this->startSession();
+        $_SESSION['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
+        $_SESSION['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
+        $_SESSION['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
+        $_SESSION['isConfirmed'] = htmlspecialchars($user->isConfirmed, ENT_QUOTES, 'UTF-8');
+        $_SESSION['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
     }
 
-    private function startSession(&$session): void
+    private function startSession(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $session = &$_SESSION;
     }
 
     private function clearSession(): void
