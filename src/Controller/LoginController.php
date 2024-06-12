@@ -38,10 +38,11 @@ class LoginController extends BaseController
                 $this->redirect('/');
             } else {
                 $this->render('login/login.twig', ['error' => 'L\'email ou le mot de passe est incorrect.']);
+                return;
             }
-        } else {
-            $this->render('login/login.twig');
         }
+
+        $this->render('login/login.twig');
     }
 
     public function logout(): void
@@ -53,8 +54,11 @@ class LoginController extends BaseController
 
     private function getRequestMethod(): string
     {
-        return filter_var($_SERVER['REQUEST_METHOD'] ?? '', FILTER_SANITIZE_STRING);
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+        $sanitizedRequestMethod = filter_var($requestMethod, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
     }
+
 
     private function getPostData(string $key, int $filter)
     {
