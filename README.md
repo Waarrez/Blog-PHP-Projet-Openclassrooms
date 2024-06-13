@@ -1,0 +1,1 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/43dfa83ce4b04fa8b24d591d2b5f1dcb)](https://app.codacy.com/gh/Waarrez/Blog-PHP-Projet-Openclassrooms/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
