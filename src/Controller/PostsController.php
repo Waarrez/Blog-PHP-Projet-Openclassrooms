@@ -72,6 +72,7 @@ class PostsController extends BaseController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
                 header('Location: /login');
+                exit();
             }
 
             $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -85,6 +86,7 @@ class PostsController extends BaseController
 
                 if ($success) {
                     header('Location: /dashboard_posts');
+                    exit();
                 } else {
                     $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
                 }
@@ -118,18 +120,20 @@ class PostsController extends BaseController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
                 header('Location: /login');
+                exit();
             }
 
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
             $userId = $_SESSION['user_id'] ?? null;
             $postId = filter_input(INPUT_POST, 'post_id', FILTER_VALIDATE_INT);
 
-            if (!empty($content) && $userId !== null) {
+            if (!empty($content) && $userId !== null && $postId !== false) {
                 try {
-                    $success = $this->commentsRepository->addComment($postId, $content, $userId);
+                    $success = $this->commentsRepository->addComment((int)$postId, $content, $userId);
 
                     if ($success) {
                         header("Location: /post/{$postId}");
+                        exit();
                     } else {
                         $this->render('error.twig', ['message' => 'Erreur lors de l\'ajout du commentaire']);
                     }
@@ -145,15 +149,11 @@ class PostsController extends BaseController
 
     public function editPost(int $postId): void
     {
-        // Vérifiez si l'utilisateur est connecté
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            return;
         }
 
-        // Vérifiez si $postId est un entier valide
         if (!filter_var($postId, FILTER_VALIDATE_INT)) {
-            // Gérez le cas où $postId n'est pas valide
             $this->render('error.twig', ['message' => 'Identifiant de publication invalide']);
             return;
         }
@@ -166,7 +166,7 @@ class PostsController extends BaseController
                 return;
             }
 
-            if ($post->getUserId() !== $_SESSION['user_id']) {
+            if (trim(strval($post->getUserId())) !== trim(strval($_SESSION['user_id']))) {
                 $this->render('error.twig', ['message' => 'Vous n\'avez pas l\'autorisation de modifier cet article.']);
                 return;
             }
@@ -185,6 +185,7 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -195,11 +196,12 @@ class PostsController extends BaseController
             $userId = $_SESSION['user_id'] ?? null;
             $postId = filter_input(INPUT_POST, 'postId', FILTER_VALIDATE_INT);
 
-            if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null) {
-                $success = $this->postsRepository->editPost($postId, $title, $chapo, $content, $author, $userId);
+            if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null && $postId !== false) {
+                $success = $this->postsRepository->editPost((int)$postId, $title, $chapo, $content, $author, $userId);
 
                 if ($success) {
                     header('Location: /dashboard_posts');
+                    exit();
                 } else {
                     $this->render('error.twig', ['message' => 'Erreur lors de la modification de l\'article']);
                 }
@@ -213,12 +215,14 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            exit();
         }
 
         try {
             $success = $this->postsRepository->deletePost($postId);
             if ($success) {
                 header('Location: /dashboard_posts');
+                exit();
             } else {
                 $this->render('error.twig', ['message' => 'Erreur lors de la suppression de l\'article']);
             }
