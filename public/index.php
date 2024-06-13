@@ -8,7 +8,7 @@ $autoloadPath = realpath(__DIR__ . '/../vendor/autoload.php');
 $twigConfigPath = realpath(__DIR__ . '/../config/twig.php');
 $routesConfigPath = realpath(__DIR__ . '/../config/routes.php');
 
-if ($autoloadPath === FALSE || $twigConfigPath === FALSE || $routesConfigPath === FALSE) {
+if ($autoloadPath === false || $twigConfigPath === false || $routesConfigPath === false) {
     throw new Exception('Un chemin de fichier nécessaire est invalide.');
 }
 

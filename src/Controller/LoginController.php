@@ -4,6 +4,7 @@ namespace Root\P5\Controller;
 
 use Exception;
 use Root\P5\Classes\DatabaseConnect;
+use Root\P5\models\User;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
 
@@ -60,19 +61,19 @@ class LoginController extends BaseController
         return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
     }
 
-    private function getPostData(string $key, int $filter)
+    private function getPostData(string $key, int $filter): ?string
     {
         return filter_input(INPUT_POST, $key, $filter);
     }
 
-    private function setSessionUser($user): void
+    private function setSessionUser(User $user): void
     {
         $this->startSession();
-        $_SESSION['user_id'] = htmlspecialchars($user->id, ENT_QUOTES, 'UTF-8');
-        $_SESSION['username'] = htmlspecialchars($user->username, ENT_QUOTES, 'UTF-8');
-        $_SESSION['email'] = htmlspecialchars($user->email, ENT_QUOTES, 'UTF-8');
-        $_SESSION['isConfirmed'] = htmlspecialchars($user->isConfirmed, ENT_QUOTES, 'UTF-8');
-        $_SESSION['roles'] = htmlspecialchars($user->roles, ENT_QUOTES, 'UTF-8');
+        $_SESSION['user_id'] = htmlspecialchars(strval($user->id), ENT_QUOTES, 'UTF-8');
+        $_SESSION['username'] = htmlspecialchars(strval($user->username), ENT_QUOTES, 'UTF-8');
+        $_SESSION['email'] = htmlspecialchars(strval($user->email), ENT_QUOTES, 'UTF-8');
+        $_SESSION['isConfirmed'] = htmlspecialchars(strval($user->isConfirmed), ENT_QUOTES, 'UTF-8');
+        $_SESSION['roles'] = htmlspecialchars(strval($user->roles), ENT_QUOTES, 'UTF-8');
     }
 
     private function startSession(): void

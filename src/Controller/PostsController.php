@@ -145,8 +145,17 @@ class PostsController extends BaseController
 
     public function editPost(int $postId): void
     {
+        // Vérifiez si l'utilisateur est connecté
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
+            return;
+        }
+
+        // Vérifiez si $postId est un entier valide
+        if (!filter_var($postId, FILTER_VALIDATE_INT)) {
+            // Gérez le cas où $postId n'est pas valide
+            $this->render('error.twig', ['message' => 'Identifiant de publication invalide']);
+            return;
         }
 
         try {
