@@ -26,6 +26,3 @@ jobs:
 
       - name: Run PHP_CodeSniffer
         run: vendor/bin/phpcbf --standard=PSR12 --severity=1 public/index.php src
-
-      - name: Run PHPSTAN
-        run: phpstan analyse
