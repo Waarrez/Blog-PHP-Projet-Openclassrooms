@@ -7,38 +7,64 @@ use PDOException;
 
 class DatabaseConnect
 {
-    private string $server = "localhost";
+    /**
+     * @var string Database user.
+     */
     private string $user = "root";
+
+    /**
+     * @var string Database password.
+     */
     private string $password = "";
-    private string $bdd = "p5";
-    private string $port = "3307";
+
+    /**
+     * @var PDO|null Database connection.
+     */
     private ?PDO $connect = null;
 
+    /**
+     * DatabaseConnect constructor.
+     */
     public function __construct()
     {
         $this->connection();
     }
 
+    /**
+     * Establishes a database connection.
+     *
+     * @return void
+     */
     public function connection(): void
     {
         try {
-            $dsn = "mysql:host=$this->server;port=$this->port;dbname=$this->bdd;charset=utf8mb4";
+            $dsn = "mysql:host=localhost;port=3307;dbname=p5;charset=utf8mb4";
             $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4'
             ];
             $this->connect = new PDO($dsn, $this->user, $this->password, $options);
         } catch (PDOException $e) {
-            echo "Erreur de connexion à la base de données : " . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Closes the database connection.
+     *
+     * @return void
+     */
     public function disconnect(): void
     {
         $this->connect = null;
     }
 
+    /**
+     * Returns the database connection.
+     *
+     * @return PDO|null Database connection.
+     */
     public function getConnection(): ?PDO
     {
         return $this->connect;

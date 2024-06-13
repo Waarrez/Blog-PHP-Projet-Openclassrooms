@@ -10,9 +10,22 @@ use Twig\Environment;
 
 class AdminController extends BaseController
 {
+    /**
+     * @var UsersRepository Instance of UsersRepository.
+     */
     private UsersRepository $usersRepository;
+
+    /**
+     * @var CommentRepository Instance of CommentRepository.
+     */
     private CommentRepository $commentRepository;
 
+    /**
+     * AdminController constructor.
+     *
+     * @param Environment     $twig Twig environment.
+     * @param DatabaseConnect $db   Database connection.
+     */
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
@@ -21,49 +34,62 @@ class AdminController extends BaseController
 
         if (!$this->isAdmin()) {
             header('Location: /');
-            exit();
         }
+    }
+
+    private function getUserRole(): string
+    {
+        $roles = isset($_SESSION['roles']) ? filter_var($_SESSION['roles'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
+
+        return !empty($roles) ? $roles : 'USER';
     }
 
     private function isAdmin(): bool
     {
-        if (isset($_SESSION['roles'])) {
-            return $_SESSION['roles'] === 'ADMIN';
-        } else {
-            return false;
-        }
+        return $this->getUserRole() === 'ADMIN';
     }
 
+    /**
+     * Displays the admin page with unapproved users and unconfirmed comments.
+     */
     public function index(): void
     {
         try {
-            $users = $this->usersRepository->getUserNotApproved(); // Correction de la faute de frappe
+            $users = $this->usersRepository->getUserNotApproved(); // Fixing typo
             $comments = $this->commentRepository->getUnconfirmedComments();
             $this->render('admin/index.twig', ['users' => $users, 'comments' => $comments]);
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Approves a specific comment based on its ID.
+     *
+     * @param int $id The ID of the comment to approve.
+     */
     public function approveComment(int $id): void
     {
         try {
             $this->commentRepository->confirmComment($id);
             header('Location: /dashboard_admin');
-            exit();
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 
+    /**
+     * Approves a specific user based on their ID.
+     *
+     * @param int $id The ID of the user to approve.
+     */
     public function approveUser(int $id): void
     {
         try {
             $this->usersRepository->confirmUser($id);
             header('Location: /dashboard_admin');
-            exit();
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            error_log('Error: ' . $e->getMessage());
         }
     }
 }

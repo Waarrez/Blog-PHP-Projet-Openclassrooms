@@ -2,14 +2,12 @@
 
 namespace Root\P5\Controller;
 
-use AllowDynamicProperties;
 use Exception;
-use JetBrains\PhpStorm\NoReturn;
 use Root\P5\Classes\DatabaseConnect;
+use Root\P5\models\User;
 use Root\P5\models\UsersRepository;
 use Twig\Environment;
 
-#[AllowDynamicProperties]
 class LoginController extends BaseController
 {
     private UsersRepository $usersRepository;
@@ -25,35 +23,74 @@ class LoginController extends BaseController
      */
     public function processLoginForm(): void
     {
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            $email = $_POST['email'] ?? '';
-            $password = $_POST['password'] ?? '';
+        if ($this->getRequestMethod() === 'POST') {
+            $email = $this->getPostData('email', FILTER_SANITIZE_EMAIL);
+            $password = $this->getPostData('password', FILTER_SANITIZE_SPECIAL_CHARS);
+
+            if (!$email || !$password) {
+                $this->render('login/login.twig', ['error' => 'Email ou mot de passe non fourni']);
+                return;
+            }
 
             $user = $this->usersRepository->loginUser($email, $password);
 
             if ($user !== null) {
-                $_SESSION['user_id'] = $user->id;
-                $_SESSION['username'] = $user->username;
-                $_SESSION['email'] = $user->email;
-                $_SESSION['isConfirmed'] = $user->isConfirmed;
-                $_SESSION['roles'] = $user->roles;
-
-                header('Location: /');
-                exit();
+                $this->setSessionUser($user);
+                $this->redirect('/');
+                return;
             } else {
-                echo "L'email ou le mot de passe est incorrect.";
+                $this->render('login/login.twig', ['error' => 'L\'email ou le mot de passe est incorrect.']);
+                return;
             }
-        } else {
-            $this->render('login/login.twig');
         }
+
+        $this->render('login/login.twig');
     }
 
     public function logout(): void
     {
-        session_start();
+        $this->startSession();
+        $this->clearSession();
+        $this->redirect('/');
+    }
+
+    private function getRequestMethod(): string
+    {
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+        $sanitizedRequestMethod = filter_var(stripslashes($requestMethod), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
+    }
+
+    private function getPostData(string $key, int $filter): ?string
+    {
+        return filter_input(INPUT_POST, $key, $filter);
+    }
+
+    private function setSessionUser(User $user): void
+    {
+        $this->startSession();
+        $_SESSION['user_id'] = htmlspecialchars(strval($user->id), ENT_QUOTES, 'UTF-8');
+        $_SESSION['username'] = htmlspecialchars(strval($user->username), ENT_QUOTES, 'UTF-8');
+        $_SESSION['email'] = htmlspecialchars(strval($user->email), ENT_QUOTES, 'UTF-8');
+        $_SESSION['isConfirmed'] = htmlspecialchars(strval($user->isConfirmed), ENT_QUOTES, 'UTF-8');
+        $_SESSION['roles'] = htmlspecialchars(strval($user->roles), ENT_QUOTES, 'UTF-8');
+    }
+
+    private function startSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
+    private function clearSession(): void
+    {
         session_unset();
         session_destroy();
-        header('Location: /');
-        exit();
+    }
+
+    private function redirect(string $url): void
+    {
+        header('Location: ' . $url);
     }
 }

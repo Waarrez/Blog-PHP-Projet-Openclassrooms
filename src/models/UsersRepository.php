@@ -85,7 +85,7 @@ class UsersRepository
         $count = $stmt->fetchColumn();
 
         if ($count > 0) {
-            echo "Cet email est déjà utilisé, veuillez en choisir un autre.";
+            error_log('Error: Email déja utilisé ! ');
             return false;
         }
 

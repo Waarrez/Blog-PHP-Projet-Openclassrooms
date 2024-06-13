@@ -89,7 +89,7 @@ class PostsRepository
      * @return Post|null
      * @throws Exception
      */
-    public function getPostById($postId): ?Post
+    public function getPostById(mixed $postId): ?Post
     {
         if (!is_numeric($postId)) {
             throw new \InvalidArgumentException('L\'identifiant de publication doit être un entier.');

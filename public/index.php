@@ -1,34 +1,46 @@
 <?php
 
 use Root\P5\Classes\DatabaseConnect;
+use Twig\Environment;
+use FastRoute\Dispatcher;
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../config/errors.php';
+$autoloadPath = realpath(__DIR__ . '/../vendor/autoload.php');
+$twigConfigPath = realpath(__DIR__ . '/../config/twig.php');
+$routesConfigPath = realpath(__DIR__ . '/../config/routes.php');
 
-$twig = require __DIR__ . '/../config/twig.php';
-$dispatcher = require __DIR__ . '/../config/routes.php';
+if ($autoloadPath === false || $twigConfigPath === false || $routesConfigPath === false) {
+    throw new Exception('Un chemin de fichier nécessaire est invalide.');
+}
+
+require_once $autoloadPath;
+
+$twig = require $twigConfigPath;
+$dispatcher = require $routesConfigPath;
 
 $dbConnect = new DatabaseConnect();
 
-$httpMethod = $_SERVER['REQUEST_METHOD'];
-$uri = $_SERVER['REQUEST_URI'];
+$requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+$httpMethod = htmlspecialchars($requestMethod, ENT_QUOTES, 'UTF-8');
+$httpMethod = stripslashes($httpMethod);
 
-if (false !== $pos = strpos($uri, '?')) {
+$requestURI = $_SERVER['REQUEST_URI'] ?? '';
+$uri = htmlspecialchars($requestURI, ENT_QUOTES, 'UTF-8');
+$uri = stripslashes($uri);
+
+if (!empty($uri) && false !== $pos = strpos($uri, '?')) {
     $uri = substr($uri, 0, $pos);
 }
-$uri = rawurldecode($uri);
 
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
 switch ($routeInfo[0]) {
-    case FastRoute\Dispatcher::NOT_FOUND:
+    case Dispatcher::NOT_FOUND:
         http_response_code(404);
-        echo '404 Not Found';
+        http_response_code(404);
         break;
-    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+    case Dispatcher::METHOD_NOT_ALLOWED:
         http_response_code(405);
-        echo '405 Method Not Allowed';
         break;
-    case FastRoute\Dispatcher::FOUND:
+    case Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $vars = $routeInfo[2];
         try {
@@ -49,13 +61,16 @@ switch ($routeInfo[0]) {
                 throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
             }
 
-            if (method_exists($controller, $methodName)) {
-                $controller->{$methodName}($vars);
-            } else {
-                throw new Exception("La méthode $methodName n'existe pas sur le contrôleur $controllerName.");
+            foreach ($vars as $key => $value) {
+                if (is_numeric($value)) {
+                    $vars[$key] = (int)$value;
+                }
             }
+
+            $controller->{$methodName}(...array_values($vars));
         } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
+            http_response_code(500);
+            error_log('Error: ' . $e->getMessage());
         }
         break;
 }
