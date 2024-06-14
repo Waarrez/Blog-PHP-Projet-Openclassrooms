@@ -6,99 +6,155 @@ use DateTime;
 
 class Post
 {
-    // Identifiant du post
+    /**
+     * @var int
+     */
     private int $id;
 
-    // Titre du post
+    /**
+     * @var string
+     */
     private string $title;
 
-    // Chapô du post
+    /**
+     * @var string
+     */
     private string $chapo;
 
-    // Contenu du post
+    /**
+     * @var string
+     */
     private string $content;
 
-    // Auteur du post
+    /**
+     * @var string
+     */
     private string $author;
 
-    // Identifiant de l'utilisateur associé au post
+    /**
+     * @var int
+     */
     private int $userId;
 
-    // Date de la dernière mise à jour du post
+    /**
+     * @var DateTime
+     */
     private DateTime $updatedAt;
 
-    // Getters et setters pour l'identifiant du post
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * @param int $id
+     * @return void
+     */
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    // Getters et setters pour le titre du post
+    /**
+     * @return string
+     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
+    /**
+     * @param string $title
+     * @return void
+     */
     public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    // Getters et setters pour le chapô du post
+    /**
+     * @return string
+     */
     public function getChapo(): string
     {
         return $this->chapo;
     }
 
+    /**
+     * @param string $chapo
+     * @return void
+     */
     public function setChapo(string $chapo): void
     {
         $this->chapo = $chapo;
     }
 
-    // Getters et setters pour le contenu du post
+    /**
+     * @return string
+     */
     public function getContent(): string
     {
         return $this->content;
     }
 
+    /**
+     * @param string $content
+     * @return void
+     */
     public function setContent(string $content): void
     {
         $this->content = $content;
     }
 
-    // Getters et setters pour l'auteur du post
+    /**
+     * @return string
+     */
     public function getAuthor(): string
     {
         return $this->author;
     }
 
+    /**
+     * @param string $author
+     * @return void
+     */
     public function setAuthor(string $author): void
     {
         $this->author = $author;
     }
 
-    // Getters et setters pour l'identifiant de l'utilisateur associé au post
+    /**
+     * @return int
+     */
     public function getUserId(): int
     {
         return $this->userId;
     }
 
+    /**
+     * @param int $userId
+     * @return void
+     */
     public function setUserId(int $userId): void
     {
         $this->userId = $userId;
     }
 
-    // Getters et setters pour la date de la dernière mise à jour du post
+    /**
+     * @return DateTime
+     */
     public function getUpdatedAt(): DateTime
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param DateTime $updatedAt
+     * @return void
+     */
     public function setUpdatedAt(DateTime $updatedAt): void
     {
         $this->updatedAt = $updatedAt;

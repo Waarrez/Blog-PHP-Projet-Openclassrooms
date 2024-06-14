@@ -1,0 +1,37 @@
+@startuml
+
+actor User as User
+participant "System" as System
+participant RegisterController as Controller
+participant UserService as UserService
+participant UserRepository as UserRepo
+
+User -> System: Navigate to registration page
+activate System
+
+User -> Controller: Submit registration details
+activate Controller
+
+Controller -> UserService: Validate registration data
+activate UserService
+
+UserService -> UserRepo: Check if username exists
+activate UserRepo
+UserRepo --> UserService: Username available
+deactivate UserRepo
+
+UserService -> UserRepo: Save new user
+activate UserRepo
+UserRepo --> UserService: User saved
+deactivate UserRepo
+
+UserService -> Controller: Registration success response
+deactivate UserService
+
+Controller -> System: Redirect to login page
+deactivate Controller
+
+System -> User: Display login page with registration success message
+
+deactivate System
+@enduml

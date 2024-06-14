@@ -1,0 +1,32 @@
+@startuml
+
+actor User as User
+participant "System" as System
+participant LoginController as Controller
+participant UserService as UserService
+participant UserRepository as UserRepo
+
+User -> System: Navigate to login page
+activate System
+
+User -> Controller: Submit login credentials
+activate Controller
+
+Controller -> UserService: Validate login credentials
+activate UserService
+
+UserService -> UserRepo: Query user by username
+activate UserRepo
+UserRepo --> UserService: User found
+deactivate UserRepo
+
+UserService -> Controller: User authenticated
+deactivate UserService
+
+Controller -> System: Redirect to user dashboard
+deactivate Controller
+
+System -> User: Display user dashboard
+
+deactivate System
+@enduml

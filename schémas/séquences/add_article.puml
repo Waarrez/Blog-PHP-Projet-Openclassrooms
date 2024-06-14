@@ -1,0 +1,38 @@
+@startuml
+
+actor User as User
+participant "System" as System
+participant BlogController as Controller
+participant ArticleService as ArticleService
+participant PostRepository as PostRepo
+
+User -> System: Navigate to add article page
+activate System
+
+User -> Controller: Request to add article
+activate Controller
+
+Controller -> ArticleService: Validate user session
+activate ArticleService
+
+ArticleService -> System: Check user session
+deactivate ArticleService
+
+Controller -> ArticleService: Request to add article
+activate ArticleService
+
+ArticleService -> PostRepo: Save new article
+activate PostRepo
+PostRepo --> ArticleService: Article saved
+deactivate PostRepo
+
+ArticleService -> Controller: Success response
+deactivate ArticleService
+
+Controller -> System: Redirect to article list page
+deactivate Controller
+
+System -> User: Display article list page with new article
+
+deactivate System
+@enduml

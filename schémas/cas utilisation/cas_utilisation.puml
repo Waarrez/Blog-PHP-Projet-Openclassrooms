@@ -1,0 +1,47 @@
+@startuml
+
+left to right direction
+skinparam actorStyle awesome
+
+actor "Visitor" as Visitor
+actor "User" as User
+actor "Admin" as Admin
+
+rectangle Blog {
+    usecase "Read articles" as U1
+    usecase "Register" as U2
+    usecase "Login" as U3
+    usecase "Add comment" as U4
+    usecase "Validate comment" as U7
+    usecase "Contact Admin" as U8
+    usecase "Add article" as U5
+    usecase "Modify article" as U6
+    usecase "Delete article" as U9
+}
+
+Visitor --> U1
+Visitor --> U2
+Visitor --> U3
+
+User --> U1
+User --> U3
+User --> U4
+User --> U5
+User --> U6
+User --> U8
+User --> U9
+
+Admin --> U1
+Admin --> U3
+Admin --> U4
+Admin --> U6
+Admin --> U7
+Admin --> U9
+
+U4 .> U3 : << include >>
+U7 .> U3 : << include >>
+U5 .> U3 : << include >>
+U6 .> U3 : << include >>
+U9 .> U3 : << include >>
+
+@enduml

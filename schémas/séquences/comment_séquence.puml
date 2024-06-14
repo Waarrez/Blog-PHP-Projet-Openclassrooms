@@ -1,0 +1,45 @@
+@startuml
+
+actor User as User
+participant "System" as System
+participant BlogController as Controller
+participant ArticleService as ArticleService
+participant CommentService as CommentService
+participant ArticleRepository as ArticleRepo
+participant CommentRepository as CommentRepo
+
+User -> System: Navigate to article page
+activate System
+
+User -> Controller: Request to add comment
+activate Controller
+
+Controller -> ArticleService: Retrieve article details
+activate ArticleService
+
+ArticleService -> ArticleRepo: Query article by ID
+activate ArticleRepo
+ArticleRepo --> ArticleService: Article details
+deactivate ArticleRepo
+
+ArticleService -> Controller: Article details
+deactivate ArticleService
+
+Controller -> CommentService: Add comment to article
+activate CommentService
+
+CommentService -> CommentRepo: Save comment
+activate CommentRepo
+CommentRepo --> CommentService: Comment saved
+deactivate CommentRepo
+
+CommentService -> Controller: Success response
+deactivate CommentService
+
+Controller -> System: Update article page with new comment
+deactivate Controller
+
+System -> User: Display updated article page with comment
+
+deactivate System
+@enduml

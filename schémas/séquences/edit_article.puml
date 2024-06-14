@@ -1,0 +1,58 @@
+@startuml
+
+actor User as User
+participant "System" as System
+participant BlogController as Controller
+participant ArticleService as ArticleService
+participant PostRepository as PostRepo
+
+User -> System: Navigate to article edit page
+activate System
+
+User -> Controller: Request to edit article
+activate Controller
+
+Controller -> ArticleService: Validate user session
+activate ArticleService
+
+ArticleService -> System: Check user session
+deactivate ArticleService
+
+Controller -> ArticleService: Request to edit article
+activate ArticleService
+
+ArticleService -> PostRepo: Retrieve article by ID
+activate PostRepo
+PostRepo --> ArticleService: Article details
+deactivate PostRepo
+
+ArticleService -> Controller: Send article details for editing
+deactivate ArticleService
+
+Controller -> System: Display article edit form
+deactivate Controller
+
+User -> System: Submit updated article details
+activate System
+
+System -> Controller: Receive updated article data
+activate Controller
+
+Controller -> ArticleService: Validate and update article
+activate ArticleService
+
+ArticleService -> PostRepo: Save updated article
+activate PostRepo
+PostRepo --> ArticleService: Article updated
+deactivate PostRepo
+
+ArticleService -> Controller: Success response
+deactivate ArticleService
+
+Controller -> System: Redirect to updated article view
+deactivate Controller
+
+System -> User: Display updated article view
+
+deactivate System
+@enduml

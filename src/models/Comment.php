@@ -7,65 +7,60 @@ use DateTime;
 class Comment
 {
     /**
-     * @var int L'identifiant du commentaire.
+     * @var int
      */
-    private int $commentId;
+    private int $id;
 
     /**
-     * @var string Le contenu du commentaire.
+     * @var string
      */
     private string $content;
 
     /**
-     * @var int L'identifiant du post associé au commentaire.
+     * @var int
      */
     private int $postId;
 
     /**
-     * @var int L'identifiant de l'utilisateur qui a créé le commentaire.
+     * @var int
      */
     private int $userId;
 
     /**
-     * @var bool Indique si le commentaire est confirmé ou non.
+     * @var bool
      */
     private bool $isConfirmed;
 
     /**
-     * @var string Le nom d'utilisateur de l'auteur du commentaire.
+     * @var string
      */
     private string $username;
 
     /**
-     * @var string Le titre du post associé au commentaire.
+     * @var string
      */
     private string $postTitle;
 
     /**
-     * Obtient l'identifiant du commentaire.
-     *
-     * @return int L'identifiant du commentaire.
+     * @return int
      */
     public function getCommentId(): int
     {
-        return $this->commentId;
+        return $this->id;
     }
 
     /**
-     * Définit l'identifiant du commentaire.
-     *
-     * @param int $commentId L'identifiant du commentaire.
+     * @param int $commentId
      * @return void
      */
     public function setCommentId(int $commentId): void
     {
-        $this->commentId = $commentId;
+        $this->id = $commentId;
     }
 
     /**
-     * Obtient le contenu du commentaire.
      *
-     * @return string Le contenu du commentaire.
+     * @return string
      */
     public function getContent(): string
     {
@@ -73,9 +68,8 @@ class Comment
     }
 
     /**
-     * Définit le contenu du commentaire.
      *
-     * @param string $content Le contenu du commentaire.
+     * @param string $content
      * @return void
      */
     public function setContent(string $content): void
@@ -84,9 +78,8 @@ class Comment
     }
 
     /**
-     * Obtient l'identifiant du post associé au commentaire.
      *
-     * @return int L'identifiant du post associé au commentaire.
+     * @return int
      */
     public function getPostId(): int
     {
@@ -94,9 +87,8 @@ class Comment
     }
 
     /**
-     * Définit l'identifiant du post associé au commentaire.
      *
-     * @param int $postId L'identifiant du post.
+     * @param int $postId
      * @return void
      */
     public function setPostId(int $postId): void
@@ -105,9 +97,8 @@ class Comment
     }
 
     /**
-     * Obtient l'identifiant de l'utilisateur qui a créé le commentaire.
      *
-     * @return int L'identifiant de l'utilisateur.
+     * @return int
      */
     public function getUserId(): int
     {
@@ -115,9 +106,8 @@ class Comment
     }
 
     /**
-     * Définit l'identifiant de l'utilisateur qui a créé le commentaire.
      *
-     * @param int $userId L'identifiant de l'utilisateur.
+     * @param int $userId
      * @return void
      */
     public function setUserId(int $userId): void
@@ -126,9 +116,8 @@ class Comment
     }
 
     /**
-     * Obtient le nom d'utilisateur de l'auteur du commentaire.
      *
-     * @return string Le nom d'utilisateur de l'auteur du commentaire.
+     * @return string
      */
     public function getUsername(): string
     {
@@ -136,9 +125,8 @@ class Comment
     }
 
     /**
-     * Définit le nom d'utilisateur de l'auteur du commentaire.
      *
-     * @param string $username Le nom d'utilisateur.
+     * @param string $username
      * @return void
      */
     public function setUsername(string $username): void
@@ -147,9 +135,8 @@ class Comment
     }
 
     /**
-     * Indique si le commentaire est confirmé ou non.
      *
-     * @return bool True si le commentaire est confirmé, sinon False.
+     * @return bool
      */
     public function isConfirmed(): bool
     {
@@ -157,9 +144,7 @@ class Comment
     }
 
     /**
-     * Définit si le commentaire est confirmé ou non.
-     *
-     * @param bool $isConfirmed Indique si le commentaire est confirmé.
+     * @param bool $isConfirmed
      * @return void
      */
     public function setIsConfirmed(bool $isConfirmed): void
@@ -168,9 +153,7 @@ class Comment
     }
 
     /**
-     * Obtient le titre du post associé au commentaire.
-     *
-     * @return string Le titre du post associé au commentaire.
+     * @return string
      */
     public function getPostTitle(): string
     {
@@ -178,9 +161,7 @@ class Comment
     }
 
     /**
-     * Définit le titre du post associé au commentaire.
-     *
-     * @param string $postTitle Le titre du post.
+     * @param string $postTitle
      * @return void
      */
     public function setPostTitle(string $postTitle): void
