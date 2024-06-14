@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3307
--- Généré le : ven. 14 juin 2024 à 10:48
+-- Généré le : ven. 14 juin 2024 à 10:55
 -- Version du serveur : 10.6.5-MariaDB
 -- Version de PHP : 8.2.0
 
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `roles` varchar(255) NOT NULL,
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `user`
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 INSERT INTO `user` (`id`, `username`, `email`, `password`, `isConfirmed`, `roles`, `createdAt`) VALUES
 (8, 'Warez', 'thimote.cabotte6259@gmail.com', '$2y$10$mIgbk77P.cf3x922lwI7tuo.Q8AwsNMM9q9MvJatVDNK.mYacTCUW', 1, 'USER', '2024-06-07 10:27:57'),
 (10, 'John Doe', 'johndoe@gmail.com', '$2y$10$ZeCVHBg2.LRIulQrxcSCLeC9ZNeReKCGbpbfoal8NAbC.7LZ1gosC', 0, 'USER', '2024-06-07 15:36:46'),
-(13, 'Adminstrateur', 'admin@gmail.com\r\n', '$2y$10$5C881hLWDMmutcEpjXfTWubYLNYadU.7t6zWVqA211EJf5HF8S3tW', 1, 'ADMIN', '2024-06-14 12:47:07');
+(14, 'Administrateur', 'admin@gmail.com', '$2y$10$pNht4.cgrqze5lvBI7.hz.wN2d3Wsw9dw1INcKQpml/Ao3DvKTpMm', 1, 'ADMIN', '2024-06-14 12:54:09');
 
 --
 -- Contraintes pour les tables déchargées
