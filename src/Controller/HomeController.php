@@ -6,7 +6,10 @@ class HomeController extends BaseController
 {
     public function index(): void
     {
-        $this->render('home/index.twig');
+        $successMessage = $_SESSION['success'] ?? null;
+        unset($_SESSION['success']);
+
+        $this->render('home/index.twig', ['success' => $successMessage]);
     }
 
     public function contact(): void
@@ -43,6 +46,9 @@ class HomeController extends BaseController
 
     public function register(): void
     {
-        $this->render('register/register.twig');
+        $errorMessage = $_SESSION['error'] ?? null;
+        unset($_SESSION['error']);
+
+        $this->render('register/register.twig', ['error' => $errorMessage]);
     }
 }

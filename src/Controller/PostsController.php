@@ -40,6 +40,9 @@ class PostsController extends BaseController
             header('Location: /login');
         }
 
+        $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : null;
+        unset($_SESSION['success']);
+
         $userConfirmed = $_SESSION["isConfirmed"] ?? false;
         if (!$userConfirmed) {
             header('Location: /');
@@ -48,7 +51,7 @@ class PostsController extends BaseController
         try {
             $userId = $_SESSION["user_id"];
             $posts = $this->postsRepository->getPostsByUser($userId);
-            $this->render('posts/dashboard_post.twig', ['posts' => $posts]);
+            $this->render('posts/dashboard_post.twig', ['posts' => $posts, 'success' => $successMessage]);
         } catch (Exception $e) {
             error_log($e->getMessage());
             $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération des articles du tableau de bord.']);
@@ -72,7 +75,6 @@ class PostsController extends BaseController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
                 header('Location: /login');
-                exit();
             }
 
             $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -85,8 +87,8 @@ class PostsController extends BaseController
                 $success = $this->postsRepository->addPost($title, $chapo, $content, $userId, $author);
 
                 if ($success) {
+                    $_SESSION['success'] = 'Votre article à bien été ajouté ';
                     header('Location: /dashboard_posts');
-                    exit();
                 } else {
                     $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
                 }
@@ -120,7 +122,6 @@ class PostsController extends BaseController
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
                 header('Location: /login');
-                exit();
             }
 
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -132,8 +133,8 @@ class PostsController extends BaseController
                     $success = $this->commentsRepository->addComment((int)$postId, $content, $userId);
 
                     if ($success) {
+                        $_SESSION['success'] = 'Votre commentaire à bien été envoyé ! Un administrateur doit le confirmer.';
                         header("Location: /post/{$postId}");
-                        exit();
                     } else {
                         $this->render('error.twig', ['message' => 'Erreur lors de l\'ajout du commentaire']);
                     }
@@ -185,7 +186,6 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -200,8 +200,8 @@ class PostsController extends BaseController
                 $success = $this->postsRepository->editPost((int)$postId, $title, $chapo, $content, $author, $userId);
 
                 if ($success) {
+                    $_SESSION['success'] = 'Votre article à bien été modifié ';
                     header('Location: /dashboard_posts');
-                    exit();
                 } else {
                     $this->render('error.twig', ['message' => 'Erreur lors de la modification de l\'article']);
                 }
@@ -215,14 +215,13 @@ class PostsController extends BaseController
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
-            exit();
         }
 
         try {
             $success = $this->postsRepository->deletePost($postId);
             if ($success) {
+                $_SESSION['success'] = 'Votre article à bien été supprimé ';
                 header('Location: /dashboard_posts');
-                exit();
             } else {
                 $this->render('error.twig', ['message' => 'Erreur lors de la suppression de l\'article']);
             }
