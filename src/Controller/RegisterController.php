@@ -23,10 +23,11 @@ class RegisterController extends BaseController
     /**
      * Process form data
      *
-     * @throws Exception En cas d'erreur pendant le traitement du formulaire
+     * @throws Exception
      */
     public function processRegisterForm(): void
     {
+
         if ($this->getRequestMethod() === "POST") {
             $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
             $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) ?: null;
@@ -35,22 +36,27 @@ class RegisterController extends BaseController
 
             if ($this->isValidFormData($username, $email, $password, $confirmPassword)) {
                 if ($password !== $confirmPassword) {
-                    throw new InvalidArgumentException("Les mots de passe ne correspondent pas");
+                    $_SESSION['error'] = 'Les mots de passe ne correspondent pas !';
+                    $this->redirect('/register');
                 }
 
-                // Ensure $username, $email, and $password are not null
                 if ($username !== null && $email !== null && $password !== null) {
                     $success = $this->usersRepository->createUser($username, $email, $password);
 
                     if ($success === true) {
+                        $_SESSION['success'] = 'Votre inscription a bien été enregistrée ! Un administrateur va confirmer votre compte.';
                         $this->redirect('/');
+                    } else {
+                        $_SESSION['error'] = 'Une erreur est survenue lors de la création de votre compte. Veuillez réessayer.';
+                        $this->redirect('/register');
                     }
-
-                    throw new Exception("Erreur lors de la création de l'utilisateur");
                 }
+            } else {
+                $_SESSION['error'] = 'Tous les champs doivent être complétés';
+                $this->redirect('/register');
             }
-
-            throw new InvalidArgumentException("Tous les champs doivent être complétés");
+        } else {
+            throw new InvalidArgumentException("Méthode de requête non valide");
         }
     }
 
@@ -76,7 +82,6 @@ class RegisterController extends BaseController
     private function redirect(string $url): void
     {
         header("Location: $url");
-        exit();
     }
 
     /**

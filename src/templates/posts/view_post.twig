@@ -20,6 +20,10 @@
     <div class="container d-flex flex-column justify-content-center align-items-center mb-5">
         <h2>Commentaires</h2>
 
+        {% if success %}
+            {% include 'messages/success.twig' with {'message': success} %}
+        {% endif %}
+
         {% if comments is not empty %}
             <div class="comments mt-5">
                 {% for comment in comments %}
@@ -37,7 +41,6 @@
                 Aucun commentaire pour ce post.
             </div>
         {% endif %}
-
 
         {% if userIsAuthenticated %}
             <form action="/add_comment" method="POST">

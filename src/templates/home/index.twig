@@ -3,6 +3,13 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
+
+    <div class="container mt-5 text-center">
+        {% if success %}
+            {% include 'messages/success.twig' with {'message': success} %}
+        {% endif %}
+    </div>
+
     <div class="container mt-5">
         <h1 class="text-center">Thimoté Cabotte</h1>
 

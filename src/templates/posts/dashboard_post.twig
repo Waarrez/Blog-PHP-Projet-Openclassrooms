@@ -5,6 +5,9 @@
 {% block body %}
 
     <div class="container mt-5 text-center">
+        {% if success %}
+            {% include 'messages/success.twig' with {'message': success} %}
+        {% endif %}
         <h1>Mes posts</h1>
         <a href="/add_post" class="btn btn-primary mt-3">Ajouter un post</a>
 
