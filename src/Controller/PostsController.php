@@ -46,7 +46,7 @@ class PostsController extends BaseController
 
         $userConfirmed = $_SESSION["isConfirmed"] ?? false;
         if (!$userConfirmed) {
-           $this->redirect('/');
+            $this->redirect('/');
         }
 
         try {
