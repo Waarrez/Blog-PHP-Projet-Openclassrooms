@@ -6,18 +6,19 @@ use Exception;
 use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\CommentRepository;
 use Root\P5\models\PostsRepository;
+use Root\P5\Services\PostService;
 use Twig\Environment;
 
 class PostsController extends BaseController
 {
-    private PostsRepository $postsRepository;
-    private CommentRepository $commentsRepository;
+    private PostService $postService;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
-        $this->postsRepository = new PostsRepository($db);
-        $this->commentsRepository = new CommentRepository($db);
+        $postsRepository = new PostsRepository($db);
+        $commentsRepository = new CommentRepository($db);
+        $this->postService = new PostService($postsRepository, $commentsRepository);
     }
 
     /**
@@ -26,7 +27,7 @@ class PostsController extends BaseController
     public function index(): void
     {
         try {
-            $posts = $this->postsRepository->getPosts();
+            $posts = $this->postService->getPosts();
             $this->render('posts/index.twig', ['posts' => $posts]);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -37,20 +38,20 @@ class PostsController extends BaseController
     public function dashboardPosts(): void
     {
         if (!isset($_SESSION["user_id"])) {
-            header('Location: /login');
+            $this->render('/login');
         }
 
-        $successMessage = isset($_SESSION['success']) ? $_SESSION['success'] : null;
+        $successMessage = $_SESSION['success'] ?? null;
         unset($_SESSION['success']);
 
         $userConfirmed = $_SESSION["isConfirmed"] ?? false;
         if (!$userConfirmed) {
-            header('Location: /');
+           $this->redirect('/');
         }
 
         try {
             $userId = $_SESSION["user_id"];
-            $posts = $this->postsRepository->getPostsByUser($userId);
+            $posts = $this->postService->getPostsByUser($userId);
             $this->render('posts/dashboard_post.twig', ['posts' => $posts, 'success' => $successMessage]);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -74,7 +75,7 @@ class PostsController extends BaseController
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
-                header('Location: /login');
+                $this->redirect('/login');
             }
 
             $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -84,11 +85,11 @@ class PostsController extends BaseController
             $userId = $_SESSION['user_id'] ?? null;
 
             if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null) {
-                $success = $this->postsRepository->addPost($title, $chapo, $content, $userId, $author);
+                $success = $this->postService->addPost($title, $chapo, $content, $userId, $author);
 
                 if ($success) {
                     $_SESSION['success'] = 'Votre article à bien été ajouté ';
-                    header('Location: /dashboard_posts');
+                    $this->redirect('/dashboard_posts');
                 } else {
                     $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
                 }
@@ -100,16 +101,20 @@ class PostsController extends BaseController
 
     public function viewPost(int $postId): void
     {
+        $successMessage = $_SESSION['success'] ?? null;
+        unset($_SESSION['success']);
+
         try {
-            $post = $this->postsRepository->getPostById($postId);
-            $comments = $this->commentsRepository->getCommentsByPost($postId);
+            $post = $this->postService->getPostById($postId);
+            $comments = $this->postService->getCommentsByPost($postId);
 
             $userIsAuthenticated = isset($_SESSION['user_id']);
 
             $this->render('posts/view_post.twig', [
                 'post' => $post,
                 'comments' => $comments,
-                'userIsAuthenticated' => $userIsAuthenticated
+                'userIsAuthenticated' => $userIsAuthenticated,
+                'success' => $successMessage
             ]);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -121,7 +126,7 @@ class PostsController extends BaseController
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!isset($_SESSION["user_id"])) {
-                header('Location: /login');
+                $this->redirect('/login');
             }
 
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -130,7 +135,7 @@ class PostsController extends BaseController
 
             if (!empty($content) && $userId !== null && $postId !== false) {
                 try {
-                    $success = $this->commentsRepository->addComment((int)$postId, $content, $userId);
+                    $success = $this->postService->addComment((int)$postId, $content, $userId);
 
                     if ($success) {
                         $_SESSION['success'] = 'Votre commentaire à bien été envoyé ! Un administrateur doit le confirmer.';
@@ -160,7 +165,7 @@ class PostsController extends BaseController
         }
 
         try {
-            $post = $this->postsRepository->getPostById($postId);
+            $post = $this->postService->getPostById($postId);
 
             if ($post === null) {
                 $this->render('error.twig', ['message' => 'Article non trouvé']);
@@ -197,7 +202,7 @@ class PostsController extends BaseController
             $postId = filter_input(INPUT_POST, 'postId', FILTER_VALIDATE_INT);
 
             if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null && $postId !== false) {
-                $success = $this->postsRepository->editPost((int)$postId, $title, $chapo, $content, $author, $userId);
+                $success = $this->postService->editPost((int)$postId, $title, $chapo, $content, $author, $userId);
 
                 if ($success) {
                     $_SESSION['success'] = 'Votre article à bien été modifié ';
@@ -218,7 +223,7 @@ class PostsController extends BaseController
         }
 
         try {
-            $success = $this->postsRepository->deletePost($postId);
+            $success = $this->postService->deletePost($postId);
             if ($success) {
                 $_SESSION['success'] = 'Votre article à bien été supprimé ';
                 header('Location: /dashboard_posts');
