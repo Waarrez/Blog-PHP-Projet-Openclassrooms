@@ -73,4 +73,14 @@ class BaseController
         }
         return null;
     }
+
+    /**
+     * Redirect to route
+     *
+     * @param string $url
+     */
+    protected function redirect(string $url): void
+    {
+        header("Location: $url");
+    }
 }

@@ -6,16 +6,18 @@ use Exception;
 use Root\P5\Classes\DatabaseConnect;
 use Root\P5\models\User;
 use Root\P5\models\UsersRepository;
+use Root\P5\Services\LoginService;
 use Twig\Environment;
 
 class LoginController extends BaseController
 {
-    private UsersRepository $usersRepository;
+    private LoginService $loginService;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
-        $this->usersRepository = new UsersRepository($db);
+        $usersRepository = new UsersRepository($db);
+        $this->loginService = new LoginService($usersRepository);
     }
 
     /**
@@ -27,19 +29,16 @@ class LoginController extends BaseController
             $email = $this->getPostData('email', FILTER_SANITIZE_EMAIL);
             $password = $this->getPostData('password', FILTER_SANITIZE_SPECIAL_CHARS);
 
-            if (!$email || !$password) {
-                $this->render('login/login.twig', ['error' => 'Email ou mot de passe non fourni']);
-                return;
-            }
+            try {
+                $user = $this->loginService->processLoginForm($email, $password);
 
-            $user = $this->usersRepository->loginUser($email, $password);
-
-            if ($user !== null) {
-                $this->setSessionUser($user);
-                $this->redirect('/');
-                return;
-            } else {
-                $this->render('login/login.twig', ['error' => 'L\'email ou le mot de passe est incorrect.']);
+                if ($user !== null) {
+                    $this->setSessionUser($user);
+                    $this->redirect('/');
+                    return;
+                }
+            } catch (Exception $e) {
+                $this->render('login/login.twig', ['error' => $e->getMessage()]);
                 return;
             }
         }
@@ -87,10 +86,5 @@ class LoginController extends BaseController
     {
         session_unset();
         session_destroy();
-    }
-
-    private function redirect(string $url): void
-    {
-        header('Location: ' . $url);
     }
 }
