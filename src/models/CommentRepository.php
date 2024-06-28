@@ -51,7 +51,7 @@ class CommentRepository
         $statement->execute(['slug' => $slug]);
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return $row ? (int)$row['id'] : null;
+        return $row ? (int) $row['id'] : null;
     }
 
     /**
