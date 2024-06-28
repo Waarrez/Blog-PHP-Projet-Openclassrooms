@@ -32,6 +32,11 @@ class Post
     private string $author;
 
     /**
+     * @var string
+     */
+    private string $slug;
+
+    /**
      * @var int
      */
     private int $userId;
@@ -124,6 +129,23 @@ class Post
     public function setAuthor(string $author): void
     {
         $this->author = $author;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     * @return void
+     */
+    public function setSlug(string $slug): void
+    {
+        $this->slug = $slug;
     }
 
     /**

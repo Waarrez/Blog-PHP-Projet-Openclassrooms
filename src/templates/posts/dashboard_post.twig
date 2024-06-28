@@ -28,8 +28,8 @@
                         <td>{{ post.author }}</td>
                         <td>{{ post.updatedAt|date('Y-m-d') }}</td>
                         <td>
-                            <a class="btn btn-secondary" href="/edit_post/{{ post.id }}">Modifier</a>
-                            <a class="btn btn-danger" href="/delete_post/{{ post.id }}">Supprimer</a>
+                            <a class="btn btn-secondary" href="/edit_post/{{ post.slug }}">Modifier</a>
+                            <a class="btn btn-danger" href="/delete_post/{{ post.slug }}">Supprimer</a>
                         </td>
                     </tr>
                 {% endfor %}
