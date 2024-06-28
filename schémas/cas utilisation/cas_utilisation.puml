@@ -2,6 +2,7 @@
 
 left to right direction
 skinparam actorStyle awesome
+scale 2000 width
 
 actor "Visitor" as Visitor
 actor "User" as User
@@ -39,9 +40,13 @@ Admin --> U7
 Admin --> U9
 
 U4 .> U3 : << include >>
+
 U7 .> U3 : << include >>
+
 U5 .> U3 : << include >>
+
 U6 .> U3 : << include >>
+
 U9 .> U3 : << include >>
 
 @enduml
