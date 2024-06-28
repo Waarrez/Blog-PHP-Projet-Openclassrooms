@@ -78,34 +78,8 @@ class Comment {
     +void setPostTitle(string $postTitle)
 }
 
-class UsersRepository {
-    +User loginUser(string $email, string $password)
-    +void createUser(string $username, string $email, string $password)
-    +void confirmUser(int $userId)
-    +array<User> getUserNotApproved()
-}
-
-class CommentRepository {
-    +array<Comment|null> getCommentsByPost(int $postId)
-    +bool addComment(int $postId, string $content, int $userId)
-    +array<array<string, mixed>> getUnconfirmedComments()
-    +bool confirmComment(int $commentId)
-}
-
-class PostsRepository {
-    +array<Post|null> getPosts()
-    +array<Post|null> getPostsByUser(int $userId)
-    +Post|null getPostById(mixed $postId)
-    +Post|null addPost(string $title, string $chapo, string $content, int $userId, string $author)
-    +bool editPost(int $postId, string $title, string $chapo, string $content, string $author, int $userId)
-    +bool deletePost(int $postId)
-}
-
 Post --> User : belongs to
 Comment --> Post : relates to
 Comment --> User : written by
-PostsRepository --> User : manages
-CommentRepository --> Comment : manages
-UsersRepository --> User : manages
 
 @enduml

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3307
--- Généré le : ven. 14 juin 2024 à 10:55
+-- Généré le : ven. 28 juin 2024 à 10:42
 -- Version du serveur : 10.6.5-MariaDB
 -- Version de PHP : 8.2.0
 
@@ -37,15 +37,16 @@ CREATE TABLE IF NOT EXISTS `comment` (
   PRIMARY KEY (`id`),
   KEY `postId` (`post_id`),
   KEY `userId` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `comment`
 --
 
 INSERT INTO `comment` (`id`, `content`, `post_id`, `user_id`, `isConfirmed`) VALUES
-(10, 'TEST', 9, 8, 1),
-(11, 'TEST', 9, 8, 1);
+(17, 'Test', 15, 8, 1),
+(18, 'Très bon article ! ', 18, 8, 1),
+(19, 'Bon article !', 18, 8, 1);
 
 -- --------------------------------------------------------
 
@@ -60,19 +61,20 @@ CREATE TABLE IF NOT EXISTS `post` (
   `chapo` varchar(255) NOT NULL,
   `content` text NOT NULL,
   `author` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
   `updatedAt` datetime NOT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `post`
 --
 
-INSERT INTO `post` (`id`, `title`, `chapo`, `content`, `author`, `updatedAt`, `user_id`) VALUES
-(8, 'dzadcazedaz', 'adzdzadza', 'dazadzaadz', 'Warez', '2024-06-11 14:43:59', 8),
-(9, 'TES', 'TEST', 'TEST 2', 'Warez', '2024-06-13 10:24:27', 8);
+INSERT INTO `post` (`id`, `title`, `chapo`, `content`, `author`, `slug`, `updatedAt`, `user_id`) VALUES
+(15, 'Salut le monde 2', 'Monde', 'Ceci est un test', 'Warez', 'salut-le-monde', '2024-06-28 09:46:00', 8),
+(18, 'Nouvel article sur le php', 'PHP', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eu eros massa. Sed sed placerat massa. Vestibulum scelerisque euismod orci a suscipit. Suspendisse eu urna id quam iaculis malesuada. Duis est ligula, consectetur quis enim ut, sagittis laoreet nisi. Integer sed magna vehicula, molestie ligula quis, pellentesque diam. Sed mi libero, malesuada quis enim eget, lacinia sodales metus.&#13;&#10;&#13;&#10;In hac habitasse platea dictumst. Nunc id diam et magna pulvinar porta a vitae augue. Morbi ac maximus elit. Nulla non aliquam ante, in feugiat purus. Nunc in volutpat mauris. Morbi ac metus convallis, efficitur orci in, luctus neque. Vivamus pellentesque pellentesque efficitur. Vestibulum interdum lacus nec ligula condimentum vehicula. Aenean sodales eros sed eros dignissim, et tempus sem scelerisque. Donec mollis sem lacus, quis condimentum nunc luctus id.', 'Warez', 'nouvel-article-sur-le-php', '2024-06-28 10:07:54', 8);
 
 -- --------------------------------------------------------
 
@@ -90,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `roles` varchar(255) NOT NULL,
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `user`
@@ -98,8 +100,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 INSERT INTO `user` (`id`, `username`, `email`, `password`, `isConfirmed`, `roles`, `createdAt`) VALUES
 (8, 'Warez', 'thimote.cabotte6259@gmail.com', '$2y$10$mIgbk77P.cf3x922lwI7tuo.Q8AwsNMM9q9MvJatVDNK.mYacTCUW', 1, 'USER', '2024-06-07 10:27:57'),
-(10, 'John Doe', 'johndoe@gmail.com', '$2y$10$ZeCVHBg2.LRIulQrxcSCLeC9ZNeReKCGbpbfoal8NAbC.7LZ1gosC', 0, 'USER', '2024-06-07 15:36:46'),
-(14, 'Administrateur', 'admin@gmail.com', '$2y$10$pNht4.cgrqze5lvBI7.hz.wN2d3Wsw9dw1INcKQpml/Ao3DvKTpMm', 1, 'ADMIN', '2024-06-14 12:54:09');
+(10, 'John Doe', 'johndoe@gmail.com', '$2y$10$ZeCVHBg2.LRIulQrxcSCLeC9ZNeReKCGbpbfoal8NAbC.7LZ1gosC', 1, 'USER', '2024-06-07 15:36:46'),
+(14, 'Administrateur', 'admin@gmail.com', '$2y$10$pNht4.cgrqze5lvBI7.hz.wN2d3Wsw9dw1INcKQpml/Ao3DvKTpMm', 1, 'ADMIN', '2024-06-14 12:54:09'),
+(22, 'Toto', 'toto@gmail.com', '$2y$10$dytVPmItxfkopqVjHaHVTOvX5US27BnXUAxL94fFhmhFX9h9Hyzjm', 1, 'USER', '2024-06-25 19:58:04'),
+(23, 'TEST', 'test@gmail.com', '$2y$10$zc126WIk9Bz49aQhzd5O6OHl8OuzMNzKywW/7Rz/EXOQDwi3PcEpm', 1, 'USER', '2024-06-26 09:49:32');
 
 --
 -- Contraintes pour les tables déchargées
