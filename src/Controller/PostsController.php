@@ -99,14 +99,14 @@ class PostsController extends BaseController
         }
     }
 
-    public function viewPost(int $postId): void
+    public function viewPost(string $slug): void
     {
         $successMessage = $_SESSION['success'] ?? null;
         unset($_SESSION['success']);
 
         try {
-            $post = $this->postService->getPostById($postId);
-            $comments = $this->postService->getCommentsByPost($postId);
+            $post = $this->postService->getPostBySlug($slug);
+            $comments = $this->postService->getCommentsByPost($slug);
 
             $userIsAuthenticated = isset($_SESSION['user_id']);
 
@@ -118,7 +118,7 @@ class PostsController extends BaseController
             ]);
         } catch (Exception $e) {
             error_log($e->getMessage());
-            $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération de l\'article.']);
+            $this->render('error.twig', ['message' => $e->getMessage()]);
         }
     }
 
@@ -131,15 +131,15 @@ class PostsController extends BaseController
 
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
             $userId = $_SESSION['user_id'] ?? null;
-            $postId = filter_input(INPUT_POST, 'post_id', FILTER_VALIDATE_INT);
+            $slug = filter_input(INPUT_POST, 'slug', FILTER_SANITIZE_SPECIAL_CHARS);
 
-            if (!empty($content) && $userId !== null && $postId !== false) {
+            if (!empty($content) && $userId !== null && !empty($slug)) {
                 try {
-                    $success = $this->postService->addComment((int)$postId, $content, $userId);
+                    $success = $this->postService->addComment($slug, $content, $userId);
 
                     if ($success) {
-                        $_SESSION['success'] = 'Votre commentaire à bien été envoyé ! Un administrateur doit le confirmer.';
-                        header("Location: /post/{$postId}");
+                        $_SESSION['success'] = 'Votre commentaire a bien été envoyé ! Un administrateur doit le confirmer.';
+                        header("Location: /post/{$slug}");
                     } else {
                         $this->render('error.twig', ['message' => 'Erreur lors de l\'ajout du commentaire']);
                     }
@@ -153,19 +153,19 @@ class PostsController extends BaseController
         }
     }
 
-    public function editPost(int $postId): void
+    public function editPost(string $slug): void
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
         }
 
-        if (!filter_var($postId, FILTER_VALIDATE_INT)) {
-            $this->render('error.twig', ['message' => 'Identifiant de publication invalide']);
+        if (empty($slug)) {
+            $this->render('error.twig', ['message' => 'Slug de publication invalide']);
             return;
         }
 
         try {
-            $post = $this->postService->getPostById($postId);
+            $post = $this->postService->getPostBySlug($slug);
 
             if ($post === null) {
                 $this->render('error.twig', ['message' => 'Article non trouvé']);
@@ -216,14 +216,14 @@ class PostsController extends BaseController
         }
     }
 
-    public function deletePost(int $postId): void
+    public function deletePost(string $slug): void
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
         }
 
         try {
-            $success = $this->postService->deletePost($postId);
+            $success = $this->postService->deletePost($slug);
             if ($success) {
                 $_SESSION['success'] = 'Votre article à bien été supprimé ';
                 header('Location: /dashboard_posts');

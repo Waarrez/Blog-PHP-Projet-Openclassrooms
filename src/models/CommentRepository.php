@@ -36,12 +36,36 @@ class CommentRepository
     }
 
     /**
-     * @param int $postId
-     * @return array<Comment|null>
+     * @param string $slug
+     * @return int|null
      * @throws Exception
      */
-    public function getCommentsByPost(int $postId): array
+    public function getPostIdBySlug(string $slug): ?int
     {
+        $pdo = $this->databaseConnect->getConnection();
+        if ($pdo === null) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("SELECT id FROM post WHERE slug = :slug");
+        $statement->execute(['slug' => $slug]);
+        $row = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? (int)$row['id'] : null;
+    }
+
+    /**
+     * @param string $slug
+     * @return array<Comment>
+     * @throws Exception
+     */
+    public function getCommentsByPost(string $slug): array
+    {
+        $postId = $this->getPostIdBySlug($slug);
+        if ($postId === null) {
+            throw new \Exception('Post non trouvé pour le slug donné');
+        }
+
         $pdo = $this->databaseConnect->getConnection();
         if ($pdo === null) {
             throw new \Exception('Erreur de connexion à la base de données');
@@ -59,22 +83,35 @@ class CommentRepository
 
         $comments = [];
         foreach ($rows as $row) {
-            $comments[] = $this->fetchComments($row);
+            $comments[] = $row;
         }
 
         return $comments;
     }
 
-    public function addComment(int $postId, string $content, int $userId): bool
+
+    /**
+     * @param string $slug
+     * @param string $content
+     * @param int $userId
+     * @return bool
+     * @throws Exception
+     */
+    public function addComment(string $slug, string $content, int $userId): bool
     {
+        $postId = $this->getPostIdBySlug($slug);
+        if ($postId === null) {
+            throw new \Exception('Post non trouvé pour le slug donné');
+        }
+
         $pdo = $this->databaseConnect->getConnection();
         if ($pdo === null) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
         $statement = $pdo->prepare("
-        INSERT INTO comment (content, post_id, user_id, isConfirmed)
-        VALUES (:content, :postId, :userId, false)
+            INSERT INTO comment (content, post_id, user_id, isConfirmed)
+            VALUES (:content, :postId, :userId, 0)
         ");
 
         $statement->execute([

@@ -60,39 +60,39 @@ class PostService
     /**
      * Get post by ID
      *
-     * @param int $postId
+     * @param string $slug
+     * @return Post
      * @throws Exception
-     * @return mixed
      */
-    public function getPostById(int $postId)
+    public function getPostBySlug(string $slug): Post
     {
-        return $this->postsRepository->getPostById($postId);
+        return $this->postsRepository->getPostBySlug($slug);
     }
 
     /**
      * Get comments by post ID
      *
-     * @param int $postId
+     * @param string $slug
      * @throws Exception
      * @return array
      */
-    public function getCommentsByPost(int $postId): array
+    public function getCommentsByPost(string $slug): array
     {
-        return $this->commentsRepository->getCommentsByPost($postId);
+        return $this->commentsRepository->getCommentsByPost($slug);
     }
 
     /**
      * Add a new comment
      *
-     * @param int $postId
+     * @param string $slug
      * @param string $content
      * @param int $userId
-     * @throws Exception
      * @return bool
+     * @throws Exception
      */
-    public function addComment(int $postId, string $content, int $userId): bool
+    public function addComment(string $slug, string $content, int $userId): bool
     {
-        return $this->commentsRepository->addComment($postId, $content, $userId);
+        return $this->commentsRepository->addComment($slug, $content, $userId);
     }
 
     /**
@@ -115,12 +115,12 @@ class PostService
     /**
      * Delete a post
      *
-     * @param int $postId
+     * @param string $slug
      * @throws Exception
      * @return bool
      */
-    public function deletePost(int $postId): bool
+    public function deletePost(string $slug): bool
     {
-        return $this->postsRepository->deletePost($postId);
+        return $this->postsRepository->deletePost($slug);
     }
 }

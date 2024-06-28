@@ -6,14 +6,17 @@ use DateTime;
 use Exception;
 use Root\P5\Classes\DatabaseConnect;
 use PDO;
+use Root\P5\Services\SlugService;
 
 class PostsRepository
 {
     private DatabaseConnect $databaseConnect;
+    private SlugService $slugService;
 
     public function __construct(DatabaseConnect $databaseConnect)
     {
         $this->databaseConnect = $databaseConnect;
+        $this->slugService = new SlugService();
     }
 
     /**
@@ -32,6 +35,7 @@ class PostsRepository
         $post->setChapo($row['chapo']);
         $post->setContent($row['content']);
         $post->setAuthor($row['author']);
+        $post->setSlug($row['slug']);
         $post->setUserId($row['user_id']);
         $post->setUpdatedAt(new DateTime($row['updatedAt']));
 
@@ -85,30 +89,33 @@ class PostsRepository
     }
 
     /**
-     * @param mixed $postId
+     * @param string $slug
      * @return Post|null
      * @throws Exception
      */
-    public function getPostById(mixed $postId): ?Post
+    public function getPostBySlug(string $slug): ?Post
     {
-        if (!is_numeric($postId)) {
-            throw new \InvalidArgumentException('L\'identifiant de publication doit être un entier.');
+        if (empty($slug)) {
+            throw new \InvalidArgumentException('Le slug de publication doit être une chaîne de caractères non vide.');
         }
-
-        $postId = (int)$postId;
 
         $pdo = $this->databaseConnect->getConnection();
         if ($pdo === null) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
-        $statement = $pdo->prepare("SELECT * FROM post WHERE id = :id");
-        $statement->bindValue(':id', $postId, PDO::PARAM_INT);
+        $statement = $pdo->prepare("SELECT * FROM post WHERE slug = :slug");
+        $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
         $statement->execute();
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
+        if ($row === false) {
+            return null;
+        }
+
         return $this->fetchPost($row);
     }
+
 
     /**
      * @param string $title
@@ -126,15 +133,18 @@ class PostsRepository
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
-        $statement = $pdo->prepare("INSERT INTO post (title, chapo, content, author, updatedAt, user_id) VALUES (:title, :chapo, :content, :author, NOW(), :userId)");
+        $slug = $this->slugService->generateSlug($title);
+
+        $statement = $pdo->prepare("INSERT INTO post (title, chapo, content, author, slug, updatedAt, user_id) VALUES (:title, :chapo, :content, :author, :slug, NOW(), :userId)");
         $statement->bindValue(':title', $title, PDO::PARAM_STR);
         $statement->bindValue(':chapo', $chapo, PDO::PARAM_STR);
         $statement->bindValue(':content', $content, PDO::PARAM_STR);
         $statement->bindValue(':author', $author, PDO::PARAM_STR);
+        $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->execute();
         $postId = $pdo->lastInsertId();
-        return $this->getPostById($postId);
+        return $this->getPostBySlug($slug);
     }
 
     /**
@@ -160,15 +170,15 @@ class PostsRepository
     /**
      * @throws Exception
      */
-    public function deletePost(int $postId): bool
+    public function deletePost(string $slug): bool
     {
         $pdo = $this->databaseConnect->getConnection();
         if ($pdo === null) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
-        $statement = $pdo->prepare("DELETE FROM post WHERE id = :postId");
-        $statement->bindValue(':postId', $postId, PDO::PARAM_INT);
+        $statement = $pdo->prepare("DELETE FROM post WHERE slug = :slug");
+        $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
         return $statement->execute();
     }
 }
