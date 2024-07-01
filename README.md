@@ -16,4 +16,4 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/43dfa83ce4b04fa8b24d591d2b5f1dcb)](https://app.codacy.com/gh/Waarrez/Blog-PHP-Projet-Openclassrooms/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![PHP Version](https://img.shields.io/badge/php-8.0-blue)](https://www.php.net/releases/8.0/en.php)
 ![Composer Version](https://img.shields.io/badge/Composer-2.6.6-blue)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/96c9da19e430de02df23/test_coverage)](https://codeclimate.com/github/Waarrez/Blog-PHP-Projet-Openclassrooms/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/96c9da19e430de02df23/maintainability)](https://codeclimate.com/github/Waarrez/Blog-PHP-Projet-Openclassrooms/maintainability)
