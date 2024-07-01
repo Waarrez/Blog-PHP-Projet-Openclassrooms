@@ -5,7 +5,7 @@ namespace Root\P5\models;
 use DateTime;
 use Exception;
 use PDO;
-use Root\P5\Classes\DatabaseConnect;
+use Root\P5\Manager\DatabaseConnect;
 
 class UsersRepository
 {

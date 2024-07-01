@@ -5,7 +5,7 @@ namespace Root\P5\Controller;
 use AllowDynamicProperties;
 use Exception;
 use InvalidArgumentException;
-use Root\P5\Classes\DatabaseConnect;
+use Root\P5\Manager\DatabaseConnect;
 use Root\P5\models\UsersRepository;
 use Root\P5\Services\RegisterService;
 use Twig\Environment;
