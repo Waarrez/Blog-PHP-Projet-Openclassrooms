@@ -3,7 +3,7 @@
 namespace Root\P5\Controller;
 
 use Twig\Environment;
-use Root\P5\Classes\DatabaseConnect;
+use Root\P5\Manager\DatabaseConnect;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;

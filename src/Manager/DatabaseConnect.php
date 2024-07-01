@@ -1,6 +1,6 @@
 <?php
 
-namespace Root\P5\Classes;
+namespace Root\P5\Manager;
 
 use PDO;
 use PDOException;

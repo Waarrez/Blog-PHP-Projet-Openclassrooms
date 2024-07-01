@@ -3,7 +3,7 @@
 namespace Root\P5\Controller;
 
 use Exception;
-use Root\P5\Classes\DatabaseConnect;
+use Root\P5\Manager\DatabaseConnect;
 use Root\P5\models\CommentRepository;
 use Root\P5\models\UsersRepository;
 use Root\P5\Services\AdminService;

@@ -4,7 +4,7 @@ namespace Root\P5\models;
 
 use DateTime;
 use Exception;
-use Root\P5\Classes\DatabaseConnect;
+use Root\P5\Manager\DatabaseConnect;
 use PDO;
 use Root\P5\Services\SlugService;
 
