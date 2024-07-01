@@ -9,12 +9,14 @@ class MailService
 {
     private PHPMailer $mailer;
 
-    public function __construct(PHPMailer $mailer) {
+    public function __construct(PHPMailer $mailer)
+    {
         $this->mailer = $mailer;
         $this->configureMailer();
     }
 
-    private function configureMailer(): void {
+    private function configureMailer(): void
+    {
         $this->mailer->isSMTP();
         $this->mailer->Host = 'smtp.gmail.com';
         $this->mailer->SMTPAuth = true;
@@ -26,7 +28,8 @@ class MailService
         $this->mailer->Encoding = 'base64';
     }
 
-    public function sendMail(string $name, string $email, string $message): bool {
+    public function sendMail(string $name, string $email, string $message): bool
+    {
         try {
             $this->mailer->setFrom($email, $name);
             $this->mailer->addAddress('thimote.cabotte6259@gmail.com');
