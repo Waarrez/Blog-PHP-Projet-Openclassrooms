@@ -8,20 +8,14 @@ use Root\P5\models\UsersRepository;
 
 class LoginService
 {
-    private UsersRepository $usersRepository;
-
-    public function __construct(UsersRepository $usersRepository)
+    public function __construct(private UsersRepository $usersRepository)
     {
-        $this->usersRepository = $usersRepository;
     }
 
     /**
      * Process login form data
      *
-     * @param string|null $email
-     * @param string|null $password
      * @throws Exception
-     * @return User|null
      */
     public function processLoginForm(?string $email, ?string $password): ?User
     {
@@ -31,7 +25,7 @@ class LoginService
 
         $user = $this->usersRepository->loginUser($email, $password);
 
-        if ($user === null) {
+        if (!$user instanceof \Root\P5\models\User) {
             throw new Exception('L\'email ou le mot de passe est incorrect.');
         }
 

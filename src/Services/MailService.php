@@ -37,7 +37,7 @@ class MailService
             $this->mailer->Subject = 'Nouveau message blog php';
             $this->mailer->Body = nl2br(htmlspecialchars($message, ENT_QUOTES, 'UTF-8'));
             return $this->mailer->send();
-        } catch (Exception $e) {
+        } catch (Exception) {
             error_log("Mailer Error: " . $this->mailer->ErrorInfo);
             return false;
         }

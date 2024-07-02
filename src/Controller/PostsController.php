@@ -159,18 +159,13 @@ class PostsController extends BaseController
             header('Location: /login');
         }
 
-        if (empty($slug)) {
+        if ($slug === '' || $slug === '0') {
             $this->render('error.twig', ['message' => 'Slug de publication invalide']);
             return;
         }
 
         try {
             $post = $this->postService->getPostBySlug($slug);
-
-            if ($post === null) {
-                $this->render('error.twig', ['message' => 'Article non trouvé']);
-                return;
-            }
 
             if (trim(strval($post->getUserId())) !== trim(strval($_SESSION['user_id']))) {
                 $this->render('error.twig', ['message' => 'Vous n\'avez pas l\'autorisation de modifier cet article.']);

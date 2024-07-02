@@ -32,7 +32,7 @@ class LoginController extends BaseController
             try {
                 $user = $this->loginService->processLoginForm($email, $password);
 
-                if ($user !== null) {
+                if ($user instanceof \Root\P5\models\User) {
                     $this->setSessionUser($user);
                     $this->redirect('/');
                     return;

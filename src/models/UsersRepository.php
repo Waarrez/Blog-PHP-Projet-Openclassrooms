@@ -9,15 +9,11 @@ use Root\P5\Manager\DatabaseConnect;
 
 class UsersRepository
 {
-    private DatabaseConnect $databaseConnect;
-
-    public function __construct(DatabaseConnect $databaseConnect)
+    public function __construct(private DatabaseConnect $databaseConnect)
     {
-        $this->databaseConnect = $databaseConnect;
     }
 
     /**
-     * @param mixed $row
      * @return User|null
      * @throws Exception
      */
@@ -46,7 +42,7 @@ class UsersRepository
     public function getUserNotApproved(): array
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -57,7 +53,7 @@ class UsersRepository
         $users = [];
         foreach ($rows as $row) {
             $user = $this->fetchUsers($row);
-            if ($user !== null) {
+            if ($user instanceof \Root\P5\models\User) {
                 $users[] = $user;
             }
         }
@@ -66,16 +62,12 @@ class UsersRepository
     }
 
     /**
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @return bool
      * @throws Exception
      */
     public function createUser(string $username, string $email, string $password): bool
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -95,21 +87,18 @@ class UsersRepository
         $statement->bindValue(':username', $username, PDO::PARAM_STR);
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
         $statement->bindValue(':password', $hashed_password, PDO::PARAM_STR);
-        $success = $statement->execute();
 
-        return $success;
+        return $statement->execute();
     }
 
     /**
-     * @param string $email
-     * @param string $password
      * @return User|null
      * @throws Exception
      */
     public function loginUser(string $email, string $password): ?User
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -126,14 +115,12 @@ class UsersRepository
     }
 
     /**
-     * @param int $userId
-     * @return bool
      * @throws Exception
      */
     public function confirmUser(int $userId): bool
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 

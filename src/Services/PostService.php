@@ -9,20 +9,14 @@ use Root\P5\models\PostsRepository;
 
 class PostService
 {
-    private PostsRepository $postsRepository;
-    private CommentRepository $commentsRepository;
-
-    public function __construct(PostsRepository $postsRepository, CommentRepository $commentsRepository)
+    public function __construct(private PostsRepository $postsRepository, private CommentRepository $commentsRepository)
     {
-        $this->postsRepository = $postsRepository;
-        $this->commentsRepository = $commentsRepository;
     }
 
     /**
      * Get all posts
      *
      * @throws Exception
-     * @return array
      */
     public function getPosts(): array
     {
@@ -32,9 +26,7 @@ class PostService
     /**
      * Get posts by user ID
      *
-     * @param int $userId
      * @throws Exception
-     * @return array
      */
     public function getPostsByUser(int $userId): array
     {
@@ -44,12 +36,6 @@ class PostService
     /**
      * Add a new post
      *
-     * @param string $title
-     * @param string $chapo
-     * @param string $content
-     * @param int $userId
-     * @param string $author
-     * @return Post
      * @throws Exception
      */
     public function addPost(string $title, string $chapo, string $content, int $userId, string $author): Post
@@ -60,15 +46,13 @@ class PostService
     /**
      * Get post by ID
      *
-     * @param string $slug
-     * @return Post
      * @throws Exception
      */
     public function getPostBySlug(string $slug): Post
     {
         $post = $this->postsRepository->getPostBySlug($slug);
 
-        if (!$post) {
+        if (!$post instanceof \Root\P5\models\Post) {
             error_log("L'article avec le slug $slug n'a pas été trouvé.");
         }
 
@@ -78,9 +62,7 @@ class PostService
     /**
      * Get comments by post ID
      *
-     * @param string $slug
      * @throws Exception
-     * @return array
      */
     public function getCommentsByPost(string $slug): array
     {
@@ -90,10 +72,6 @@ class PostService
     /**
      * Add a new comment
      *
-     * @param string $slug
-     * @param string $content
-     * @param int $userId
-     * @return bool
      * @throws Exception
      */
     public function addComment(string $slug, string $content, int $userId): bool
@@ -104,14 +82,7 @@ class PostService
     /**
      * Edit a post
      *
-     * @param int $postId
-     * @param string $title
-     * @param string $chapo
-     * @param string $content
-     * @param string $author
-     * @param int $userId
      * @throws Exception
-     * @return bool
      */
     public function editPost(int $postId, string $title, string $chapo, string $content, string $author, int $userId): bool
     {
@@ -121,9 +92,7 @@ class PostService
     /**
      * Delete a post
      *
-     * @param string $slug
      * @throws Exception
-     * @return bool
      */
     public function deletePost(string $slug): bool
     {

@@ -28,7 +28,7 @@ class AdminController extends BaseController
     private function getUserRole(): string
     {
         $roles = isset($_SESSION['roles']) ? filter_var($_SESSION['roles'], FILTER_SANITIZE_SPECIAL_CHARS) : '';
-        return !empty($roles) ? $roles : 'USER';
+        return empty($roles) ? 'USER' : $roles;
     }
 
     private function isAdmin(): bool
