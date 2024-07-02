@@ -4,7 +4,6 @@ namespace Root\P5\Services;
 
 class SlugService
 {
-    
     public function generateSlug(string $string): string
     {
         // Convertit en minuscules

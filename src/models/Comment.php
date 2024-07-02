@@ -30,55 +30,46 @@ class Comment
         $this->id = $commentId;
     }
 
-    
     public function getContent(): string
     {
         return $this->content;
     }
 
-    
     public function setContent(string $content): void
     {
         $this->content = $content;
     }
 
-    
     public function getPostId(): int
     {
         return $this->postId;
     }
 
-    
     public function setPostId(int $postId): void
     {
         $this->postId = $postId;
     }
 
-    
     public function getUserId(): int
     {
         return $this->userId;
     }
 
-    
     public function setUserId(int $userId): void
     {
         $this->userId = $userId;
     }
 
-    
     public function getUsername(): string
     {
         return $this->username;
     }
 
-    
     public function setUsername(string $username): void
     {
         $this->username = $username;
     }
 
-    
     public function isConfirmed(): bool
     {
         return $this->isConfirmed;
