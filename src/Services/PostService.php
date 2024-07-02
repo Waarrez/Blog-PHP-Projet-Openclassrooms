@@ -66,7 +66,7 @@ class PostService
      */
     public function getPostBySlug(string $slug): Post
     {
-        $post =  $this->postsRepository->getPostBySlug($slug);
+        $post = $this->postsRepository->getPostBySlug($slug);
 
         if (!$post) {
             error_log("L'article avec le slug $slug n'a pas été trouvé.");
