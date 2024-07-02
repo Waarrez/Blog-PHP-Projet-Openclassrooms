@@ -7,11 +7,8 @@ use PHPMailer\PHPMailer\Exception;
 
 class MailService
 {
-    private PHPMailer $mailer;
-
-    public function __construct(PHPMailer $mailer)
+    public function __construct(private PHPMailer $mailer)
     {
-        $this->mailer = $mailer;
         $this->configureMailer();
     }
 
