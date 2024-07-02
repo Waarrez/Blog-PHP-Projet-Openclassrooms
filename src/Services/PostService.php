@@ -69,7 +69,7 @@ class PostService
         $post =  $this->postsRepository->getPostBySlug($slug);
 
         if (!$post) {
-            throw new Exception("L'article avec le slug $slug n'a pas été trouvé.");
+            error_log("L'article avec le slug $slug n'a pas été trouvé.");
         }
 
         return $post;
