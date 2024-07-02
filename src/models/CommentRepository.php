@@ -8,42 +8,17 @@ use Root\P5\Manager\DatabaseConnect;
 
 class CommentRepository
 {
-    private DatabaseConnect $databaseConnect;
-
-    public function __construct(DatabaseConnect $databaseConnect)
+    public function __construct(private DatabaseConnect $databaseConnect)
     {
-        $this->databaseConnect = $databaseConnect;
     }
 
     /**
-     * @param array<string, mixed> $row
-     * @throws Exception
-     */
-    private function fetchComments(array $row): ?Comment
-    {
-        if (!$row) {
-            return null;
-        }
-
-        $comment = new Comment();
-        $comment->setCommentId($row['id']);
-        $comment->setContent($row['content']);
-        $comment->setPostId($row['post_id']);
-        $comment->setUserId($row['user_id']);
-        $comment->setUsername($row['username']);
-
-        return $comment;
-    }
-
-    /**
-     * @param string $slug
-     * @return int|null
      * @throws Exception
      */
     public function getPostIdBySlug(string $slug): ?int
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -55,7 +30,6 @@ class CommentRepository
     }
 
     /**
-     * @param string $slug
      * @return array<Comment>
      * @throws Exception
      */
@@ -67,7 +41,7 @@ class CommentRepository
         }
 
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -79,22 +53,12 @@ class CommentRepository
             AND c.isConfirmed = 1
         ");
         $statement->execute(['postId' => $postId]);
-        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        $comments = [];
-        foreach ($rows as $row) {
-            $comments[] = $row;
-        }
-
-        return $comments;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
     /**
-     * @param string $slug
-     * @param string $content
-     * @param int $userId
-     * @return bool
      * @throws Exception
      */
     public function addComment(string $slug, string $content, int $userId): bool
@@ -105,7 +69,7 @@ class CommentRepository
         }
 
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -130,7 +94,7 @@ class CommentRepository
     public function getUnconfirmedComments(): array
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -144,18 +108,13 @@ class CommentRepository
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        $comments = [];
-        foreach ($rows as $row) {
-            $comments[] = $row;
-        }
-
-        return $comments;
+        return $rows;
     }
 
     public function confirmComment(int $commentId): bool
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 

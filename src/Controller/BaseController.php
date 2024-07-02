@@ -10,13 +10,8 @@ use Twig\Error\SyntaxError;
 
 class BaseController
 {
-    protected Environment $twig;
-    protected DatabaseConnect $db;
-
-    public function __construct(Environment $twig, DatabaseConnect $db)
+    public function __construct(protected Environment $twig, protected DatabaseConnect $db)
     {
-        $this->twig = $twig;
-        $this->db = $db;
         $this->startSession();
     }
 
@@ -76,8 +71,6 @@ class BaseController
 
     /**
      * Redirect to route
-     *
-     * @param string $url
      */
     protected function redirect(string $url): void
     {

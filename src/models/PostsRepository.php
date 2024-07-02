@@ -10,12 +10,10 @@ use Root\P5\Services\SlugService;
 
 class PostsRepository
 {
-    private DatabaseConnect $databaseConnect;
     private SlugService $slugService;
 
-    public function __construct(DatabaseConnect $databaseConnect)
+    public function __construct(private DatabaseConnect $databaseConnect)
     {
-        $this->databaseConnect = $databaseConnect;
         $this->slugService = new SlugService();
     }
 
@@ -25,7 +23,7 @@ class PostsRepository
      */
     private function fetchPost(array $row): ?Post
     {
-        if (!$row) {
+        if ($row === []) {
             return null;
         }
 
@@ -49,7 +47,7 @@ class PostsRepository
     public function getPosts(): array
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -72,7 +70,7 @@ class PostsRepository
     public function getPostsByUser(int $userId): array
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -89,18 +87,17 @@ class PostsRepository
     }
 
     /**
-     * @param string $slug
      * @return Post|null
      * @throws Exception
      */
     public function getPostBySlug(string $slug): ?Post
     {
-        if (empty($slug)) {
+        if ($slug === '' || $slug === '0') {
             throw new \InvalidArgumentException('Le slug de publication doit être une chaîne de caractères non vide.');
         }
 
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -118,18 +115,13 @@ class PostsRepository
 
 
     /**
-     * @param string $title
-     * @param string $chapo
-     * @param string $content
-     * @param int $userId
-     * @param string $author
      * @return Post|null
      * @throws Exception
      */
     public function addPost(string $title, string $chapo, string $content, int $userId, string $author): ?Post
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -143,7 +135,7 @@ class PostsRepository
         $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->execute();
-        $postId = $pdo->lastInsertId();
+        $pdo->lastInsertId();
         return $this->getPostBySlug($slug);
     }
 
@@ -153,7 +145,7 @@ class PostsRepository
     public function editPost(int $postId, string $title, string $chapo, string $content, string $author, int $userId): bool
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
@@ -173,7 +165,7 @@ class PostsRepository
     public function deletePost(string $slug): bool
     {
         $pdo = $this->databaseConnect->getConnection();
-        if ($pdo === null) {
+        if (!$pdo instanceof \PDO) {
             throw new \Exception('Erreur de connexion à la base de données');
         }
 

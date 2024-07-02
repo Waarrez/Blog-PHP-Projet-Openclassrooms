@@ -8,13 +8,8 @@ use Root\P5\models\UsersRepository;
 
 class AdminService
 {
-    private UsersRepository $usersRepository;
-    private CommentRepository $commentRepository;
-
-    public function __construct(UsersRepository $usersRepository, CommentRepository $commentRepository)
+    public function __construct(private UsersRepository $usersRepository, private CommentRepository $commentRepository)
     {
-        $this->usersRepository = $usersRepository;
-        $this->commentRepository = $commentRepository;
     }
 
     /**

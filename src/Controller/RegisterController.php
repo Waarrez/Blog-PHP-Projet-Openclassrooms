@@ -56,8 +56,6 @@ class RegisterController extends BaseController
 
     /**
      * Retrieve method HTTP
-     *
-     * @return string
      */
     private function getRequestMethod(): string
     {
