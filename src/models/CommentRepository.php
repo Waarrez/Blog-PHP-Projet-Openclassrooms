@@ -106,9 +106,8 @@ class CommentRepository
             WHERE c.isConfirmed = 0
         ");
         $statement->execute();
-        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return $rows;
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function confirmComment(int $commentId): bool
