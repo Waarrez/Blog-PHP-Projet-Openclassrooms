@@ -7,7 +7,7 @@ use Root\P5\models\UsersRepository;
 
 class RegisterService
 {
-    public function __construct(private UsersRepository $usersRepository)
+    public function __construct(private readonly UsersRepository $usersRepository)
     {
     }
 

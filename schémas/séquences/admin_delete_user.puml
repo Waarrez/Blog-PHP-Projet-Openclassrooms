@@ -1,0 +1,13 @@
+@startuml
+actor Admin
+participant AdminController
+participant AdminService
+participant UsersRepository
+
+Admin -> AdminController : click delete button
+AdminController -> AdminService : deleteUser(id)
+AdminService -> UsersRepository : deleteUser(id)
+UsersRepository -> AdminService : return success (bool)
+AdminService -> AdminController : return success (bool)
+AdminController -> Admin : show success or error message
+@enduml

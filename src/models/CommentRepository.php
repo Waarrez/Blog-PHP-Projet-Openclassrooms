@@ -88,6 +88,31 @@ class CommentRepository
     }
 
     /**
+     * @param int $commentId
+     * @return bool
+     * @throws Exception
+     */
+    public function deleteComment(int $commentId): bool
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if (!$pdo instanceof \PDO) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("
+            DELETE FROM comment
+            WHERE id = :commentId
+        ");
+
+        $statement->execute([
+            'commentId' => $commentId,
+        ]);
+
+        return $statement->rowCount() > 0;
+    }
+
+
+    /**
      * @return array<array<string, mixed>>
      * @throws Exception
      */

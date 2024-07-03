@@ -18,6 +18,7 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/edit_post/{slug:[\w-]+}', [PostsController::class, 'editPost']);
     $r->addRoute('POST', '/edit_post/{slug:[\w-]+}', [PostsController::class, 'editPostForm']);
     $r->addRoute('GET', '/delete_post/{slug:[\w-]+}', [PostsController::class, 'deletePost']);
+    $r->addRoute('GET', '/delete_p/{slug:[\w-]+}', [AdminController::class, 'deletePost']);
     $r->addRoute('GET', '/post/{slug:[\w-]+}', [PostsController::class, 'viewPost']);
     $r->addRoute('GET', '/login', [HomeController::class, 'login']);
     $r->addRoute('GET', '/logout', [LoginController::class, 'logout']);
@@ -28,4 +29,11 @@ return simpleDispatcher(function (RouteCollector $r) {
     $r->addRoute('GET', '/dashboard_admin', [AdminController::class, 'index']);
     $r->addRoute('POST', '/approveC/{id:\d+}', [AdminController::class, 'approveComment']);
     $r->addRoute('POST', '/approveU/{id:\d+}', [AdminController::class, 'approveUser']);
+    $r->addRoute('POST', '/deleteC/{id:\d+}', [AdminController::class, 'deleteComment']);
+    $r->addRoute('POST', '/deleteU/{id:\d+}', [AdminController::class, 'deleteUser']);
+
+    $r->addGroup('', function (RouteCollector $r) {
+        $r->addRoute('GET', '/{any:.+}', [HomeController::class, 'pageNotFound']);
+        $r->addRoute('POST', '/{any:.+}', [HomeController::class, 'pageNotFound']);
+    });
 });

@@ -136,4 +136,26 @@ class UsersRepository
 
         return $statement->rowCount() > 0;
     }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteUser(int $userId): bool
+    {
+        $pdo = $this->databaseConnect->getConnection();
+        if (!$pdo instanceof \PDO) {
+            throw new \Exception('Erreur de connexion à la base de données');
+        }
+
+        $statement = $pdo->prepare("
+        DELETE FROM user
+        WHERE id = :userId
+    ");
+
+        $statement->execute([
+            'userId' => $userId,
+        ]);
+
+        return $statement->rowCount() > 0;
+    }
 }

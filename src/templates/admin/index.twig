@@ -3,8 +3,20 @@
 {% block title %}Administration{% endblock %}
 
 {% block body %}
+    <div class="container mt-5 text-center">
+        {% if error %}
+            {% include 'messages/error.twig' with {'message': error} %}
+        {% endif %}
+    </div>
+
+    <div class="container mt-5 text-center">
+        {% if success %}
+            {% include 'messages/success.twig' with {'message': success} %}
+        {% endif %}
+    </div>
+
     <div class="container d-flex flex-column justify-content-center align-items-center mt-5 gap-5 mb-5">
-        <div class="text-center">
+        <div class="text-center mt-2">
             <h2>Utilisateurs à confirmer</h2>
             <table class="table text-center">
                 <thead>
@@ -21,9 +33,12 @@
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ post.createdAt|date('Y-m-d') }}</td>
-                        <td>
+                        <td class="d-flex gap-2">
                             <form method="post" action="/approveU/{{ user.id }}">
-                                <button type="submit" class="btn btn-success">Approuvé</button>
+                                <button type="submit" class="btn btn-success">Approuver</button>
+                            </form>
+                            <form method="post" action="/deleteU/{{ user.id }}">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
                             </form>
                         </td>
                     </tr>
@@ -31,7 +46,36 @@
                 </tbody>
             </table>
         </div>
-        <div class="text-center">
+        <div class="text-center mt-5">
+            <h2>Liste des articles</h2>
+
+            <table class="table text-center">
+                <thead>
+                <tr>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Contenu</th>
+                    <th scope="col">Utilisateur</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for post in posts %}
+                    <tr>
+                        <td>{{ post.title }}</td>
+                        <td>{{ post.content }}</td>
+                        <td>{{ post.author }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a class="btn btn-danger" href="/delete_p/{{ post.slug }}">Supprimer</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-5">
             <h2>Commentaires à valider</h2>
 
             <table class="table text-center">
@@ -49,9 +93,12 @@
                         <td>{{ comment.username }}</td>
                         <td>{{ comment.content }}</td>
                         <td>{{ comment.postTitle }}</td>
-                        <td>
+                        <td class="d-flex gap-2">
                             <form method="post" action="/approveC/{{ comment.id }}">
-                                <button type="submit" class="btn btn-success">Approuvé</button>
+                                <button type="submit" class="btn btn-success">Approuver</button>
+                            </form>
+                            <form method="post" action="/deleteC/{{ comment.id }}">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
                             </form>
                         </td>
                     </tr>

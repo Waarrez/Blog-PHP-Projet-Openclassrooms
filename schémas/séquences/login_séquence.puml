@@ -15,7 +15,7 @@ activate Controller
 Controller -> UserService: Validate login credentials
 activate UserService
 
-UserService -> UserRepo: Query user by username
+UserService -> UserRepo: Query user by email
 activate UserRepo
 UserRepo --> UserService: User found
 deactivate UserRepo

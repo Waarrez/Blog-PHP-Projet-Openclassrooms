@@ -17,7 +17,7 @@ activate Controller
 Controller -> ArticleService: Retrieve article details
 activate ArticleService
 
-ArticleService -> ArticleRepo: Query article by ID
+ArticleService -> ArticleRepo: Query article by slug
 activate ArticleRepo
 ArticleRepo --> ArticleService: Article details
 deactivate ArticleRepo

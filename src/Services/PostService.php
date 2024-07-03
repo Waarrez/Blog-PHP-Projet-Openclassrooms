@@ -9,7 +9,7 @@ use Root\P5\models\PostsRepository;
 
 class PostService
 {
-    public function __construct(private PostsRepository $postsRepository, private CommentRepository $commentsRepository)
+    public function __construct(private readonly PostsRepository $postsRepository, private readonly CommentRepository $commentsRepository)
     {
     }
 

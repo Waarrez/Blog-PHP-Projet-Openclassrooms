@@ -21,7 +21,7 @@ deactivate ArticleService
 Controller -> ArticleService: Request to delete article
 activate ArticleService
 
-ArticleService -> PostRepo: Retrieve article by ID
+ArticleService -> PostRepo: Retrieve article by slug
 activate PostRepo
 PostRepo --> ArticleService: Article details
 deactivate PostRepo

@@ -26,6 +26,13 @@ class HomeController extends BaseController
         $this->render('home/index.twig', ['success' => $successMessage]);
     }
 
+    public function pageNotFound(): void
+    {
+        http_response_code(404);
+
+        $this->render("404.twig");
+    }
+
     public function contact(): void
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -35,7 +42,6 @@ class HomeController extends BaseController
 
             if ($name && $email && $message) {
                 $success = $this->mailService->sendMail($name, $email, $message);
-
                 if ($success) {
                     $this->render('home/index.twig', ['success' => 'Votre message a bien été envoyé.']);
                 } else {
