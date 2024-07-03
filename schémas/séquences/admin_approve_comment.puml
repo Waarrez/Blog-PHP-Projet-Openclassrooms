@@ -1,0 +1,13 @@
+@startuml
+actor Admin
+participant AdminController
+participant AdminService
+participant CommentRepository
+
+Admin -> AdminController : click approve button
+AdminController -> AdminService : approveComment(id)
+AdminService -> CommentRepository : confirmComment(id)
+CommentRepository -> AdminService : return success (bool)
+AdminService -> AdminController : return success (bool)
+AdminController -> Admin : show success or error message
+@enduml

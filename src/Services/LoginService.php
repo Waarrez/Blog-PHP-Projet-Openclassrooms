@@ -8,7 +8,7 @@ use Root\P5\models\UsersRepository;
 
 class LoginService
 {
-    public function __construct(private UsersRepository $usersRepository)
+    public function __construct(private readonly UsersRepository $usersRepository)
     {
     }
 

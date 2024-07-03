@@ -115,6 +115,11 @@ class PostsRepository
 
 
     /**
+     * @param string $title
+     * @param string $chapo
+     * @param string $content
+     * @param int $userId
+     * @param string $author
      * @return Post|null
      * @throws Exception
      */
@@ -125,17 +130,23 @@ class PostsRepository
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
-        $slug = $this->slugService->generateSlug($title);
+        // Décodage des entités HTML
+        $decodedTitle = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
+        $decodedChapo = html_entity_decode($chapo, ENT_QUOTES, 'UTF-8');
+        $decodedContent = html_entity_decode($content, ENT_QUOTES, 'UTF-8');
+        $decodedAuthor = html_entity_decode($author, ENT_QUOTES, 'UTF-8');
+
+        $slug = $this->slugService->generateSlug($decodedTitle);
 
         $statement = $pdo->prepare("INSERT INTO post (title, chapo, content, author, slug, updatedAt, user_id) VALUES (:title, :chapo, :content, :author, :slug, NOW(), :userId)");
-        $statement->bindValue(':title', $title, PDO::PARAM_STR);
-        $statement->bindValue(':chapo', $chapo, PDO::PARAM_STR);
-        $statement->bindValue(':content', $content, PDO::PARAM_STR);
-        $statement->bindValue(':author', $author, PDO::PARAM_STR);
+        $statement->bindValue(':title', $decodedTitle, PDO::PARAM_STR);
+        $statement->bindValue(':chapo', $decodedChapo, PDO::PARAM_STR);
+        $statement->bindValue(':content', $decodedContent, PDO::PARAM_STR);
+        $statement->bindValue(':author', $decodedAuthor, PDO::PARAM_STR);
         $statement->bindValue(':slug', $slug, PDO::PARAM_STR);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->execute();
-        $pdo->lastInsertId();
+
         return $this->getPostBySlug($slug);
     }
 
@@ -149,13 +160,20 @@ class PostsRepository
             throw new \Exception('Erreur de connexion à la base de données');
         }
 
+        // Décodage des entités HTML
+        $decodedTitle = html_entity_decode($title, ENT_QUOTES, 'UTF-8');
+        $decodedChapo = html_entity_decode($chapo, ENT_QUOTES, 'UTF-8');
+        $decodedContent = html_entity_decode($content, ENT_QUOTES, 'UTF-8');
+        $decodedAuthor = html_entity_decode($author, ENT_QUOTES, 'UTF-8');
+
         $statement = $pdo->prepare("UPDATE post SET title = :title, chapo = :chapo, content = :content, author = :author, updatedAt = NOW(), user_id = :userId WHERE id = :postId");
-        $statement->bindValue(':title', $title, PDO::PARAM_STR);
-        $statement->bindValue(':chapo', $chapo, PDO::PARAM_STR);
-        $statement->bindValue(':content', $content, PDO::PARAM_STR);
-        $statement->bindValue(':author', $author, PDO::PARAM_STR);
+        $statement->bindValue(':title', $decodedTitle, PDO::PARAM_STR);
+        $statement->bindValue(':chapo', $decodedChapo, PDO::PARAM_STR);
+        $statement->bindValue(':content', $decodedContent, PDO::PARAM_STR);
+        $statement->bindValue(':author', $decodedAuthor, PDO::PARAM_STR);
         $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
         $statement->bindValue(':postId', $postId, PDO::PARAM_INT);
+
         return $statement->execute();
     }
 

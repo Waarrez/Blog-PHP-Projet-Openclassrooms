@@ -7,7 +7,7 @@ use PHPMailer\PHPMailer\Exception;
 
 class MailService
 {
-    public function __construct(private PHPMailer $mailer)
+    public function __construct(private readonly PHPMailer $mailer)
     {
         $this->configureMailer();
     }

@@ -15,9 +15,9 @@ activate Controller
 Controller -> UserService: Validate registration data
 activate UserService
 
-UserService -> UserRepo: Check if username exists
+UserService -> UserRepo: Check if email exists
 activate UserRepo
-UserRepo --> UserService: Username available
+UserRepo --> UserService: Email available
 deactivate UserRepo
 
 UserService -> UserRepo: Save new user

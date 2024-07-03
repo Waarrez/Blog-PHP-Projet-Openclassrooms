@@ -8,7 +8,7 @@ use Root\P5\models\UsersRepository;
 
 class AdminService
 {
-    public function __construct(private UsersRepository $usersRepository, private CommentRepository $commentRepository)
+    public function __construct(private readonly UsersRepository $usersRepository, private readonly CommentRepository $commentRepository)
     {
     }
 
@@ -39,8 +39,24 @@ class AdminService
     /**
      * @throws Exception
      */
+    public function deleteComment(int $id): bool
+    {
+        return $this->commentRepository->deleteComment($id);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function approveUser(int $id): bool
     {
         return $this->usersRepository->confirmUser($id);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteUser(int $id): bool
+    {
+        return $this->usersRepository->deleteUser($id);
     }
 }
