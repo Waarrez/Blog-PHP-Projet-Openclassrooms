@@ -7,8 +7,10 @@
 
 - Télécharger le projet avec la commande : ``` git clone https://github.com/Waarrez/Blog-PHP-Projet-Openclassrooms.git ```
 - Dans le dossier du projet et faire la commande suivante : ``` composer install ```
-- Insérer le fichier p5.sql dans phpmyadmin
+- Insérer le fichier p5.sql qui se trouve dans le dossier sql dans phpmyadmin
 - Démarrer le serveur avec la commande suivante : ``` php -S 127.0.0.1:8000 -t public ```
+- Créer vous un compte puis confirmer le avec le compte Admin
+- Tester le projet
 
 ## CONNEXION
 - Pour ce connecter avec le compte administrateur : email = admin@gmail.com,  password = admin
