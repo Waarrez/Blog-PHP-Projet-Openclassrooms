@@ -4,18 +4,22 @@ namespace Root\P5\Controller;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use Random\RandomException;
 use Root\P5\Manager\DatabaseConnect;
+use Root\P5\Services\CSRFService;
 use Root\P5\Services\MailService;
 use Twig\Environment;
 
 class HomeController extends BaseController
 {
     private MailService $mailService;
+    private CSRFService $CSRFService;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
         $this->mailService = new MailService(new PHPMailer(true));
+        $this->CSRFService = new CSRFService();
     }
 
     public function index(): void
@@ -56,16 +60,32 @@ class HomeController extends BaseController
     }
 
 
+    /**
+     * @throws RandomException
+     */
     public function login(): void
     {
-        $this->render('login/login.twig');
+        $csrfService = $this->CSRFService;
+        $csrfToken = $csrfService->generateToken();
+
+        $this->render('login/login.twig', ['csrf_token' => $csrfToken]);
     }
 
+    /**
+     * @throws RandomException
+     */
     public function register(): void
     {
+        if (isset($_SESSION["user_id"])) {
+            header('Location: /');
+        }
+
         $errorMessage = $_SESSION['error'] ?? null;
         unset($_SESSION['error']);
 
-        $this->render('register/register.twig', ['error' => $errorMessage]);
+        $csrfService = $this->CSRFService;
+        $csrfToken = $csrfService->generateToken();
+
+        $this->render('register/register.twig', ['error' => $errorMessage, 'csrf_token' => $csrfToken]);
     }
 }
