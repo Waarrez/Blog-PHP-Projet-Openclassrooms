@@ -3,15 +3,18 @@
 namespace Root\P5\Controller;
 
 use Exception;
+use Random\RandomException;
 use Root\P5\Manager\DatabaseConnect;
 use Root\P5\models\CommentRepository;
 use Root\P5\models\PostsRepository;
+use Root\P5\Services\CSRFService;
 use Root\P5\Services\PostService;
 use Twig\Environment;
 
 class PostsController extends BaseController
 {
     private PostService $postService;
+    private CSRFService $CSRFService;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
@@ -19,6 +22,7 @@ class PostsController extends BaseController
         $postsRepository = new PostsRepository($db);
         $commentsRepository = new CommentRepository($db);
         $this->postService = new PostService($postsRepository, $commentsRepository);
+        $this->CSRFService = new CSRFService();
     }
 
     /**
@@ -59,13 +63,19 @@ class PostsController extends BaseController
         }
     }
 
+    /**
+     * @throws RandomException
+     */
     public function addPost(): void
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
         }
 
-        $this->render('posts/add_post.twig');
+        $csrfService = $this->CSRFService;
+        $csrfToken = $csrfService->generateToken();
+
+        $this->render('posts/add_post.twig', ['csrf_token' => $csrfToken]);
     }
 
     /**
@@ -74,8 +84,15 @@ class PostsController extends BaseController
     public function addPostForm(): void
     {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
-            if (!isset($_SESSION["user_id"])) {
+            if (!$this->isUserLoggedIn()) {
                 $this->redirect('/login');
+                return;
+            }
+
+            $csrfToken = $_POST['csrf_token'] ?? '';
+            if (!$this->CSRFService->validateToken($csrfToken)) {
+                $this->render('error.twig', ['message' => 'Invalid CSRF token']);
+                return;
             }
 
             $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -85,17 +102,24 @@ class PostsController extends BaseController
             $userId = $_SESSION['user_id'] ?? null;
 
             if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null) {
-                $success = $this->postService->addPost($title, $chapo, $content, $userId, $author);
+                try {
+                    $success = $this->postService->addPost($title, $chapo, $content, $userId, $author);
 
-                if ($success) {
-                    $_SESSION['success'] = 'Votre article à bien été ajouté ';
-                    $this->redirect('/dashboard_posts');
-                } else {
-                    $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
+                    if ($success) {
+                        $_SESSION['success'] = 'Votre article a bien été ajouté';
+                        $this->redirect('/dashboard_posts');
+                    } else {
+                        $this->render('error.twig', ['message' => 'Erreur lors de la création du post']);
+                    }
+                } catch (Exception $e) {
+                    // Log the exception or handle it accordingly
+                    $this->render('error.twig', ['message' => 'Une erreur inattendue est survenue']);
                 }
             } else {
                 $this->render('error.twig', ['message' => 'Tous les champs doivent être complétés']);
             }
+        } else {
+            $this->redirect('/add_post');
         }
     }
 
@@ -153,11 +177,17 @@ class PostsController extends BaseController
         }
     }
 
+    /**
+     * @throws RandomException
+     */
     public function editPost(string $slug): void
     {
         if (!isset($_SESSION["user_id"])) {
             header('Location: /login');
         }
+
+        $csrfService = $this->CSRFService;
+        $csrfToken = $csrfService->generateToken();
 
         if ($slug === '' || $slug === '0') {
             $this->render('error.twig', ['message' => 'Slug de publication invalide']);
@@ -172,7 +202,7 @@ class PostsController extends BaseController
                 return;
             }
 
-            $this->render('posts/edit_post.twig', ['post' => $post]);
+            $this->render('posts/edit_post.twig', ['post' => $post, 'csrf_token' => $csrfToken]);
         } catch (Exception $e) {
             error_log($e->getMessage());
             $this->render('error.twig', ['message' => 'Une erreur s\'est produite lors de la récupération de l\'article pour l\'édition.']);
@@ -189,6 +219,12 @@ class PostsController extends BaseController
         }
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            $csrfToken = $_POST['csrf_token'] ?? '';
+            if (!$this->CSRFService->validateToken($csrfToken)) {
+                $this->render('error.twig', ['message' => 'Invalid CSRF token']);
+                return;
+            }
+
             $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
             $chapo = filter_input(INPUT_POST, 'chapo', FILTER_SANITIZE_SPECIAL_CHARS);
             $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -197,13 +233,18 @@ class PostsController extends BaseController
             $postId = filter_input(INPUT_POST, 'postId', FILTER_VALIDATE_INT);
 
             if (!empty($title) && !empty($chapo) && !empty($content) && $userId !== null && $postId !== false) {
-                $success = $this->postService->editPost((int)$postId, $title, $chapo, $content, $author, $userId);
+                try {
+                    $success = $this->postService->editPost((int)$postId, $title, $chapo, $content, $author, $userId);
 
-                if ($success) {
-                    $_SESSION['success'] = 'Votre article à bien été modifié ';
-                    header('Location: /dashboard_posts');
-                } else {
-                    $this->render('error.twig', ['message' => 'Erreur lors de la modification de l\'article']);
+                    if ($success) {
+                        $_SESSION['success'] = 'Votre article a bien été modifié';
+                        header('Location: /dashboard_posts');
+                        exit;
+                    } else {
+                        $this->render('error.twig', ['message' => 'Erreur lors de la modification de l\'article']);
+                    }
+                } catch (Exception $e) {
+                    $this->render('error.twig', ['message' => 'Une erreur inattendue est survenue']);
                 }
             } else {
                 $this->render('error.twig', ['message' => 'Tous les champs doivent être complétés']);

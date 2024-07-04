@@ -7,6 +7,7 @@ use Exception;
 use InvalidArgumentException;
 use Root\P5\Manager\DatabaseConnect;
 use Root\P5\models\UsersRepository;
+use Root\P5\Services\CSRFService;
 use Root\P5\Services\RegisterService;
 use Twig\Environment;
 
@@ -30,6 +31,15 @@ class RegisterController extends BaseController
     public function processRegisterForm(): void
     {
         if ($this->getRequestMethod() === "POST") {
+            $csrfService = new CSRFService();
+
+            $csrfToken = $_POST['csrf_token'] ?? '';
+            if (!$csrfService->validateToken($csrfToken)) {
+                $_SESSION['error'] = 'Invalid CSRF token';
+                $this->redirect('/register');
+                return;
+            }
+
             $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS) ?: null;
             $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL) ?: null;
             $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS) ?: null;

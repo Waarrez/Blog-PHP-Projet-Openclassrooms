@@ -6,6 +6,7 @@ use Exception;
 use Root\P5\Manager\DatabaseConnect;
 use Root\P5\models\User;
 use Root\P5\models\UsersRepository;
+use Root\P5\Services\CSRFService;
 use Root\P5\Services\LoginService;
 use Twig\Environment;
 
@@ -26,8 +27,16 @@ class LoginController extends BaseController
     public function processLoginForm(): void
     {
         if ($this->getRequestMethod() === 'POST') {
-            $email = $this->getPostData('email', FILTER_SANITIZE_EMAIL);
-            $password = $this->getPostData('password', FILTER_SANITIZE_SPECIAL_CHARS);
+            $csrfService = new CSRFService();
+
+            $csrfToken = $_POST['csrf_token'] ?? '';
+            if (!$csrfService->validateToken($csrfToken)) {
+                $this->render('login/login.twig', ['error' => 'Invalid CSRF token']);
+                return;
+            }
+
+            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+            $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 
             try {
                 $user = $this->loginService->processLoginForm($email, $password);
@@ -58,11 +67,6 @@ class LoginController extends BaseController
         $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
         $sanitizedRequestMethod = filter_var(stripslashes($requestMethod), FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         return $sanitizedRequestMethod !== false ? $sanitizedRequestMethod : '';
-    }
-
-    private function getPostData(string $key, int $filter): ?string
-    {
-        return filter_input(INPUT_POST, $key, $filter);
     }
 
     private function setSessionUser(User $user): void
