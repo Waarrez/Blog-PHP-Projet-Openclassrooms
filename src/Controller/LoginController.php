@@ -29,7 +29,6 @@ class LoginController extends BaseController
     public function processLoginForm(): void
     {
         if ($this->getRequestMethod() === 'POST') {
-
             $csrfToken = $_POST['csrf_token'] ?? '';
 
             if (!$this->CSRFService->validateToken($csrfToken)) {
