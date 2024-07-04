@@ -1,5 +1,7 @@
 @startuml
 
+left to right direction
+
 class Post {
     -int $id
     -string $title
