@@ -239,7 +239,6 @@ class PostsController extends BaseController
                     if ($success) {
                         $_SESSION['success'] = 'Votre article a bien été modifié';
                         header('Location: /dashboard_posts');
-                        exit;
                     } else {
                         $this->render('error.twig', ['message' => 'Erreur lors de la modification de l\'article']);
                     }
