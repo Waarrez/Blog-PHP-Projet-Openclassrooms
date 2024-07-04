@@ -20,18 +20,32 @@ activate UserRepo
 UserRepo --> UserService: Email available
 deactivate UserRepo
 
-UserService -> UserRepo: Save new user
-activate UserRepo
-UserRepo --> UserService: User saved
-deactivate UserRepo
+alt Email available
+    UserService -> UserRepo: Save new user
+    activate UserRepo
+    UserRepo --> UserService: User saved
+    deactivate UserRepo
 
-UserService -> Controller: Registration success response
-deactivate UserService
+    UserService -> Controller: Registration success response
+    deactivate UserService
 
-Controller -> System: Redirect to login page
-deactivate Controller
+    Controller -> System: Redirect to login page
+    deactivate Controller
 
-System -> User: Display login page with registration success message
+    System -> User: Display login page with registration success message
+else Email already exists
+    UserService -> Controller: Email already exists error response
+    deactivate UserService
+
+    Controller -> User: Display registration error message: "Email already in use"
+end
+
+alt Error during registration
+    UserService -> Controller: Registration error response
+    deactivate UserService
+
+    Controller -> User: Display registration error message: "An error occurred during registration"
+end
 
 deactivate System
 @enduml

@@ -1,13 +1,43 @@
 @startuml
+
 actor Admin
 participant AdminController
 participant AdminService
 participant CommentRepository
 
 Admin -> AdminController : click approve button
-AdminController -> AdminService : approveComment(id)
-AdminService -> CommentRepository : confirmComment(id)
-CommentRepository -> AdminService : return success (bool)
-AdminService -> AdminController : return success (bool)
-AdminController -> Admin : show success or error message
+activate AdminController
+
+alt Comment approval
+    AdminController -> AdminService : approveComment(id)
+    activate AdminService
+
+    AdminService -> CommentRepository : confirmComment(id)
+    activate CommentRepository
+
+    CommentRepository --> AdminService : success (bool)
+    deactivate CommentRepository
+
+    AdminService --> AdminController : success (bool)
+    deactivate AdminService
+
+    AdminController -> Admin : show success message
+else Error approving comment
+    AdminController -> AdminService : approveComment(id)
+    activate AdminService
+
+    AdminService -> CommentRepository : confirmComment(id)
+    activate CommentRepository
+
+    CommentRepository --> AdminService : error (bool)
+    deactivate CommentRepository
+
+    AdminService --> AdminController : error (bool)
+    deactivate AdminService
+
+    AdminController -> Admin : show error message
+end
+
+deactivate AdminController
+
 @enduml

@@ -1,13 +1,43 @@
 @startuml
+
 actor Admin
 participant AdminController
 participant AdminService
 participant UsersRepository
 
 Admin -> AdminController : click approve button
-AdminController -> AdminService : approveUser(id)
-AdminService -> UsersRepository : confirmUser(id)
-UsersRepository -> AdminService : return success (bool)
-AdminService -> AdminController : return success (bool)
-AdminController -> Admin : show success or error message
+activate AdminController
+
+alt User approval
+    AdminController -> AdminService : approveUser(id)
+    activate AdminService
+
+    AdminService -> UsersRepository : confirmUser(id)
+    activate UsersRepository
+
+    UsersRepository --> AdminService : success (bool)
+    deactivate UsersRepository
+
+    AdminService --> AdminController : success (bool)
+    deactivate AdminService
+
+    AdminController -> Admin : show success message
+else Error approving user
+    AdminController -> AdminService : approveUser(id)
+    activate AdminService
+
+    AdminService -> UsersRepository : confirmUser(id)
+    activate UsersRepository
+
+    UsersRepository --> AdminService : error (bool)
+    deactivate UsersRepository
+
+    AdminService --> AdminController : error (bool)
+    deactivate AdminService
+
+    AdminController -> Admin : show error message
+end
+
+deactivate AdminController
+
 @enduml

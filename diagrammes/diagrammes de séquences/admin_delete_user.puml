@@ -1,13 +1,43 @@
 @startuml
+
 actor Admin
 participant AdminController
 participant AdminService
 participant UsersRepository
 
 Admin -> AdminController : click delete button
-AdminController -> AdminService : deleteUser(id)
-AdminService -> UsersRepository : deleteUser(id)
-UsersRepository -> AdminService : return success (bool)
-AdminService -> AdminController : return success (bool)
-AdminController -> Admin : show success or error message
+activate AdminController
+
+alt User deletion
+    AdminController -> AdminService : deleteUser(id)
+    activate AdminService
+
+    AdminService -> UsersRepository : deleteUser(id)
+    activate UsersRepository
+
+    UsersRepository --> AdminService : success (bool)
+    deactivate UsersRepository
+
+    AdminService --> AdminController : success (bool)
+    deactivate AdminService
+
+    AdminController -> Admin : show success message
+else Error deleting user
+    AdminController -> AdminService : deleteUser(id)
+    activate AdminService
+
+    AdminService -> UsersRepository : deleteUser(id)
+    activate UsersRepository
+
+    UsersRepository --> AdminService : error (bool)
+    deactivate UsersRepository
+
+    AdminService --> AdminController : error (bool)
+    deactivate AdminService
+
+    AdminController -> Admin : show error message
+end
+
+deactivate AdminController
+
 @enduml

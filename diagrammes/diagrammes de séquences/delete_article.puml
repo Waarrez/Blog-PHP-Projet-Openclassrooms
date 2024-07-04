@@ -12,32 +12,40 @@ activate System
 User -> Controller: Request to delete article
 activate Controller
 
-Controller -> ArticleService: Validate user session
-activate ArticleService
+alt Validate user session
+    Controller -> ArticleService: Validate user session
+    activate ArticleService
 
-ArticleService -> System: Check user session
-deactivate ArticleService
+    ArticleService -> System: Check user session
+    deactivate ArticleService
 
-Controller -> ArticleService: Request to delete article
-activate ArticleService
+    Controller -> ArticleService: Request to delete article
+    activate ArticleService
 
-ArticleService -> PostRepo: Retrieve article by slug
-activate PostRepo
-PostRepo --> ArticleService: Article details
-deactivate PostRepo
+    ArticleService -> PostRepo: Retrieve article by slug
+    activate PostRepo
+    PostRepo --> ArticleService: Article details
+    deactivate PostRepo
 
-ArticleService -> PostRepo: Delete article
-activate PostRepo
-PostRepo --> ArticleService: Article deleted
-deactivate PostRepo
+    ArticleService -> PostRepo: Delete article
+    activate PostRepo
+    PostRepo --> ArticleService: Article deleted
+    deactivate PostRepo
 
-ArticleService -> Controller: Success response
-deactivate ArticleService
+    ArticleService -> Controller: Success response
+    deactivate ArticleService
 
-Controller -> System: Redirect to article list page
-deactivate Controller
+    Controller -> System: Redirect to article list page
+    deactivate Controller
 
-System -> User: Display article list page with success message
+    System -> User: Display article list page with success message
+else Invalid user session
+    Controller -> System: Redirect to login page
+    deactivate Controller
+
+    System -> User: Display login page
+end
 
 deactivate System
+
 @enduml

@@ -17,16 +17,27 @@ activate UserService
 
 UserService -> UserRepo: Query user by email
 activate UserRepo
-UserRepo --> UserService: User found
-deactivate UserRepo
 
-UserService -> Controller: User authenticated
-deactivate UserService
+alt User found
+    UserRepo --> UserService: User found
+    deactivate UserRepo
 
-Controller -> System: Redirect to user dashboard
-deactivate Controller
+    UserService -> Controller: User authenticated
+    deactivate UserService
 
-System -> User: Display user dashboard
+    Controller -> System: Redirect to user dashboard
+    deactivate Controller
+
+    System -> User: Display user dashboard
+else User not found or invalid credentials
+    UserRepo --> UserService: User not found or invalid credentials
+    deactivate UserRepo
+
+    UserService -> Controller: Authentication failed response
+    deactivate UserService
+
+    Controller -> User: Display login error message: "Invalid email or password"
+end
 
 deactivate System
 @enduml

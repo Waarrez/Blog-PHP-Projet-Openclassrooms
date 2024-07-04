@@ -8,38 +8,111 @@ participant CommentService as CommentService
 participant ArticleRepository as ArticleRepo
 participant CommentRepository as CommentRepo
 
-User -> System: Navigate to article page
-activate System
+alt Ajout de commentaire réussi
+    User -> System: Navigate to article page
+    activate System
 
-User -> Controller: Request to add comment
-activate Controller
+    User -> Controller: Request to add comment
+    activate Controller
 
-Controller -> ArticleService: Retrieve article details
-activate ArticleService
+    Controller -> ArticleService: Retrieve article details
+    activate ArticleService
 
-ArticleService -> ArticleRepo: Query article by slug
-activate ArticleRepo
-ArticleRepo --> ArticleService: Article details
-deactivate ArticleRepo
+    ArticleService -> ArticleRepo: Query article by slug
+    activate ArticleRepo
+    ArticleRepo --> ArticleService: Article details
+    deactivate ArticleRepo
 
-ArticleService -> Controller: Article details
-deactivate ArticleService
+    ArticleService -> Controller: Article details
+    deactivate ArticleService
 
-Controller -> CommentService: Add comment to article
-activate CommentService
+    Controller -> CommentService: Add comment to article
+    activate CommentService
 
-CommentService -> CommentRepo: Save comment
-activate CommentRepo
-CommentRepo --> CommentService: Comment saved
-deactivate CommentRepo
+    CommentService -> CommentRepo: Save comment
+    activate CommentRepo
+    CommentRepo --> CommentService: Comment saved
+    deactivate CommentRepo
 
-CommentService -> Controller: Success response
-deactivate CommentService
+    CommentService -> Controller: Success response
+    deactivate CommentService
 
-Controller -> System: Update article page with new comment
-deactivate Controller
+    Controller -> System: Update article page with new comment
+    deactivate Controller
 
-System -> User: Display updated article page with comment
+    System -> User: Display updated article page with comment
 
-deactivate System
+    deactivate System
+else Erreur de validation de session utilisateur
+    User -> System: Navigate to article page
+    activate System
+
+    User -> Controller: Request to add comment
+    activate Controller
+
+    Controller -> ArticleService: Retrieve article details
+    activate ArticleService
+
+    ArticleService -> ArticleRepo: Query article by slug
+    activate ArticleRepo
+    ArticleRepo --> ArticleService: Article details
+    deactivate ArticleRepo
+
+    ArticleService -> Controller: Article details
+    deactivate ArticleService
+
+    Controller -> CommentService: Add comment to article
+    activate CommentService
+
+    CommentService -> CommentRepo: Save comment
+    activate CommentRepo
+    CommentRepo --> CommentService: Error saving comment
+    deactivate CommentRepo
+
+    CommentService -> Controller: Error response
+    deactivate CommentService
+
+    Controller -> System: Render error page
+    deactivate Controller
+
+    System -> User: Display error message "Error saving comment"
+
+    deactivate System
+else Erreur lors de l'ajout du commentaire
+    User -> System: Navigate to article page
+    activate System
+
+    User -> Controller: Request to add comment
+    activate Controller
+
+    Controller -> ArticleService: Retrieve article details
+    activate ArticleService
+
+    ArticleService -> ArticleRepo: Query article by slug
+    activate ArticleRepo
+    ArticleRepo --> ArticleService: Article details
+    deactivate ArticleRepo
+
+    ArticleService -> Controller: Article details
+    deactivate ArticleService
+
+    Controller -> CommentService: Add comment to article
+    activate CommentService
+
+    CommentService -> CommentRepo: Save comment
+    activate CommentRepo
+    CommentRepo --> CommentService: Error saving comment
+    deactivate CommentRepo
+
+    CommentService -> Controller: Error response
+    deactivate CommentService
+
+    Controller -> System: Render error page
+    deactivate Controller
+
+    System -> User: Display error message "Error saving comment"
+
+    deactivate System
+end
+
 @enduml
