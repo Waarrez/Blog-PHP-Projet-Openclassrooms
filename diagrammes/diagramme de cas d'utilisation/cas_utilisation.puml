@@ -17,6 +17,7 @@ rectangle Blog {
     usecase "Ajouter un article" as U5
     usecase "Modifier un article" as U6
     usecase "Supprimer un article" as U9
+    usecase "Valider un utilisateur" as U10
 }
 
 User -down-> U1
@@ -31,14 +32,15 @@ User -down-> U9
 Admin -down-> U1
 Admin -down-> U3
 Admin -down-> U4
-Admin -down-> U6
 Admin -down-> U7
 Admin -down-> U9
+Admin -down-> U10
 
 U4 .> U3 : <<include>>
 U5 .> U3 : <<include>>
 U6 .> U3 : <<include>>
 U7 .> U3 : <<include>>
 U9 .> U3 : <<include>>
+U10 .> U3 : <<include>>
 
 @enduml
