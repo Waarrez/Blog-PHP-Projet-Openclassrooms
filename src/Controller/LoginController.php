@@ -56,7 +56,6 @@ class LoginController extends BaseController
             }
         }
 
-        // Render login form initially
         $this->render('login/login.twig');
     }
 
