@@ -13,12 +13,14 @@ use Twig\Environment;
 class LoginController extends BaseController
 {
     private LoginService $loginService;
+    private CSRFService $CSRFService;
 
     public function __construct(Environment $twig, DatabaseConnect $db)
     {
         parent::__construct($twig, $db);
         $usersRepository = new UsersRepository($db);
         $this->loginService = new LoginService($usersRepository);
+        $this->CSRFService = new CSRFService();
     }
 
     /**
@@ -27,10 +29,10 @@ class LoginController extends BaseController
     public function processLoginForm(): void
     {
         if ($this->getRequestMethod() === 'POST') {
-            $csrfService = new CSRFService();
 
             $csrfToken = $_POST['csrf_token'] ?? '';
-            if (!$csrfService->validateToken($csrfToken)) {
+
+            if (!$this->CSRFService->validateToken($csrfToken)) {
                 $this->render('login/login.twig', ['error' => 'Invalid CSRF token']);
                 return;
             }
