@@ -24,6 +24,7 @@ class LoginController extends BaseController
     }
 
     /**
+     *
      * @throws Exception
      */
     public function processLoginForm(): void
@@ -42,17 +43,20 @@ class LoginController extends BaseController
             try {
                 $user = $this->loginService->processLoginForm($email, $password);
 
-                if ($user instanceof \Root\P5\models\User) {
+                if ($user instanceof User) {
                     $this->setSessionUser($user);
                     $this->redirect('/');
-                    return;
+                } else {
+                    $this->render('login/login.twig', ['error' => 'Invalid email or password']);
                 }
+                return;
             } catch (Exception $e) {
                 $this->render('login/login.twig', ['error' => $e->getMessage()]);
                 return;
             }
         }
 
+        // Render login form initially
         $this->render('login/login.twig');
     }
 
